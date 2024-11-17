@@ -44,7 +44,7 @@ public class ConcessionariaCreateDTO {
         this.marca = marca;
     }
 
-    public Integer getTemEstacaoRecarga() {
+    public @NotNull(message = "O campo temEstacaoRecarga é obrigatório") Boolean getTemEstacaoRecarga() {
         return temEstacaoRecarga;
     }
 
