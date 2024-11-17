@@ -12,11 +12,11 @@ public class Reserva {
     @Column(name = "reserva_id")
     private Long reservaId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estacao_id", nullable = false)
     private EstacaoRecarga estacaoRecarga;
 
@@ -25,6 +25,18 @@ public class Reserva {
 
     @Column(name = "status", nullable = false)
     private Integer status;
+
+    // Construtor padrão
+    public Reserva() {
+    }
+
+    // Construtor completo
+    public Reserva(Usuario usuario, EstacaoRecarga estacaoRecarga, LocalDateTime dataReserva, Integer status) {
+        this.usuario = usuario;
+        this.estacaoRecarga = estacaoRecarga;
+        this.dataReserva = dataReserva;
+        this.status = status;
+    }
 
     // Getters e Setters
 

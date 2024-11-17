@@ -1,7 +1,8 @@
 package model;
 
 import jakarta.persistence.*;
-import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "estacao_recarga")
@@ -36,13 +37,13 @@ public class EstacaoRecarga {
     private EstacaoSustentavel estacaoSustentavel;
 
     @OneToMany(mappedBy = "estacaoRecarga")
-    private Set<Reserva> reservas;
+    private List<Reserva> reservas = new ArrayList<>();
 
     @OneToMany(mappedBy = "estacaoRecarga")
-    private Set<HistoricoCarregamento> historicos;
+    private List<HistoricoCarregamento> historicos = new ArrayList<>();
 
     @OneToMany(mappedBy = "estacaoRecarga")
-    private Set<StatusEstacaoRecarga> statusEstacoes;
+    private List<StatusEstacaoRecarga> statusEstacoes = new ArrayList<>();
 
     // Getters e Setters
 
@@ -110,27 +111,27 @@ public class EstacaoRecarga {
         this.estacaoSustentavel = estacaoSustentavel;
     }
 
-    public Set<Reserva> getReservas() {
+    public List<Reserva> getReservas() {
         return reservas;
     }
 
-    public void setReservas(Set<Reserva> reservas) {
+    public void setReservas(List<Reserva> reservas) {
         this.reservas = reservas;
     }
 
-    public Set<HistoricoCarregamento> getHistoricos() {
+    public List<HistoricoCarregamento> getHistoricos() {
         return historicos;
     }
 
-    public void setHistoricos(Set<HistoricoCarregamento> historicos) {
+    public void setHistoricos(List<HistoricoCarregamento> historicos) {
         this.historicos = historicos;
     }
 
-    public Set<StatusEstacaoRecarga> getStatusEstacoes() {
+    public List<StatusEstacaoRecarga> getStatusEstacoes() {
         return statusEstacoes;
     }
 
-    public void setStatusEstacoes(Set<StatusEstacaoRecarga> statusEstacoes) {
+    public void setStatusEstacoes(List<StatusEstacaoRecarga> statusEstacoes) {
         this.statusEstacoes = statusEstacoes;
     }
 }

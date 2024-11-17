@@ -1,6 +1,8 @@
 package model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "concessionaria")
@@ -14,7 +16,7 @@ public class Concessionaria {
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bairro_id", nullable = false)
     private Bairro bairro;
 
@@ -23,6 +25,10 @@ public class Concessionaria {
 
     @Column(name = "tem_estacao_recarga", nullable = false)
     private Integer temEstacaoRecarga;
+
+    // Relacionamentos
+    @OneToMany(mappedBy = "concessionaria", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Veiculo> veiculos = new ArrayList<>();
 
     // Getters e Setters
 
@@ -64,5 +70,13 @@ public class Concessionaria {
 
     public void setTemEstacaoRecarga(Integer temEstacaoRecarga) {
         this.temEstacaoRecarga = temEstacaoRecarga;
+    }
+
+    public List<Veiculo> getVeiculos() {
+        return veiculos;
+    }
+
+    public void setVeiculos(List<Veiculo> veiculos) {
+        this.veiculos = veiculos;
     }
 }

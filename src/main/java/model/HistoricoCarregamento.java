@@ -31,7 +31,7 @@ public class HistoricoCarregamento {
     private Double kwhConsumidos;
 
     // Relacionamentos
-    @OneToOne(mappedBy = "historicoCarregamento")
+    @OneToOne(mappedBy = "historicoCarregamento", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private GastoCarregamento gastoCarregamento;
 
     // Getters e Setters

@@ -1,7 +1,8 @@
 package model;
 
 import jakarta.persistence.*;
-import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "usuario")
@@ -26,13 +27,13 @@ public class Usuario {
 
     // Relacionamentos
     @OneToMany(mappedBy = "usuario")
-    private Set<Veiculo> veiculos;
+    private List<Veiculo> veiculos = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
-    private Set<Reserva> reservas;
+    private List<Reserva> reservas = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
-    private Set<HistoricoCarregamento> historicos;
+    private List<HistoricoCarregamento> historicos = new ArrayList<>();
 
     // Getters e Setters
 
@@ -76,27 +77,27 @@ public class Usuario {
         this.telefone = telefone;
     }
 
-    public Set<Veiculo> getVeiculos() {
+    public List<Veiculo> getVeiculos() {
         return veiculos;
     }
 
-    public void setVeiculos(Set<Veiculo> veiculos) {
+    public void setVeiculos(List<Veiculo> veiculos) {
         this.veiculos = veiculos;
     }
 
-    public Set<Reserva> getReservas() {
+    public List<Reserva> getReservas() {
         return reservas;
     }
 
-    public void setReservas(Set<Reserva> reservas) {
+    public void setReservas(List<Reserva> reservas) {
         this.reservas = reservas;
     }
 
-    public Set<HistoricoCarregamento> getHistoricos() {
+    public List<HistoricoCarregamento> getHistoricos() {
         return historicos;
     }
 
-    public void setHistoricos(Set<HistoricoCarregamento> historicos) {
+    public void setHistoricos(List<HistoricoCarregamento> historicos) {
         this.historicos = historicos;
     }
 }

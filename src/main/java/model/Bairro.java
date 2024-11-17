@@ -1,7 +1,8 @@
 package model;
 
 import jakarta.persistence.*;
-import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "bairro")
@@ -17,13 +18,12 @@ public class Bairro {
 
     // Relacionamentos
     @OneToMany(mappedBy = "bairro")
-    private Set<EstacaoRecarga> estacoesRecarga;
+    private List<EstacaoRecarga> estacoesRecarga = new ArrayList<>();
 
     @OneToMany(mappedBy = "bairro")
-    private Set<Concessionaria> concessionarias;
+    private List<Concessionaria> concessionarias = new ArrayList<>();
 
     // Getters e Setters
-
 
     public Long getBairroId() {
         return bairroId;
@@ -41,19 +41,19 @@ public class Bairro {
         this.nome = nome;
     }
 
-    public Set<EstacaoRecarga> getEstacoesRecarga() {
+    public List<EstacaoRecarga> getEstacoesRecarga() {
         return estacoesRecarga;
     }
 
-    public void setEstacoesRecarga(Set<EstacaoRecarga> estacoesRecarga) {
+    public void setEstacoesRecarga(List<EstacaoRecarga> estacoesRecarga) {
         this.estacoesRecarga = estacoesRecarga;
     }
 
-    public Set<Concessionaria> getConcessionarias() {
+    public List<Concessionaria> getConcessionarias() {
         return concessionarias;
     }
 
-    public void setConcessionarias(Set<Concessionaria> concessionarias) {
+    public void setConcessionarias(List<Concessionaria> concessionarias) {
         this.concessionarias = concessionarias;
     }
 }

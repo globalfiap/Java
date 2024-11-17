@@ -1,8 +1,8 @@
 package model;
 
 import jakarta.persistence.*;
-
-import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "veiculo", uniqueConstraints = @UniqueConstraint(columnNames = "marca"))
@@ -16,6 +16,10 @@ public class Veiculo {
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "concessionaria_id")
+    private Concessionaria concessionaria;
 
     @Column(name = "marca", nullable = false, length = 50)
     private String marca;
@@ -31,7 +35,7 @@ public class Veiculo {
 
     // Relacionamentos
     @OneToMany(mappedBy = "veiculo")
-    private Set<HistoricoCarregamento> historicos;
+    private List<HistoricoCarregamento> historicos = new ArrayList<>();
 
     // Getters e Setters
 
@@ -49,6 +53,14 @@ public class Veiculo {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Concessionaria getConcessionaria() {
+        return concessionaria;
+    }
+
+    public void setConcessionaria(Concessionaria concessionaria) {
+        this.concessionaria = concessionaria;
     }
 
     public String getMarca() {
@@ -83,11 +95,11 @@ public class Veiculo {
         this.isEletrico = isEletrico;
     }
 
-    public Set<HistoricoCarregamento> getHistoricos() {
+    public List<HistoricoCarregamento> getHistoricos() {
         return historicos;
     }
 
-    public void setHistoricos(Set<HistoricoCarregamento> historicos) {
+    public void setHistoricos(List<HistoricoCarregamento> historicos) {
         this.historicos = historicos;
     }
 }
