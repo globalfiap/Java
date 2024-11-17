@@ -1,20 +1,21 @@
-package dto;
+package dto.Usuario;
 
-public class UsuarioDTO {
-    private Long usuarioId;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+
+public class UsuarioUpdateDTO {
+
+    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
     private String nome;
+
+    @Email(message = "Email inválido")
+    @Size(max = 100, message = "O email deve ter no máximo 100 caracteres")
     private String email;
+
+    @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
     private String telefone;
 
     // Getters e Setters
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
 
     public String getNome() {
         return nome;
