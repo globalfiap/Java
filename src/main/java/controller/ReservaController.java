@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -18,6 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/reservas")
+@Api(value = "Reserva Controller", tags = {"Reservas"})
 public class ReservaController {
 
     private final ReservaService reservaService;
@@ -27,6 +30,7 @@ public class ReservaController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Listar todas as reservas", notes = "Retorna uma lista paginada de todas as reservas")
     public CollectionModel<EntityModel<ReservaDTO>> listarTodas(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -44,6 +48,7 @@ public class ReservaController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Obter uma reserva específica", notes = "Retorna os detalhes de uma reserva pelo seu ID")
     public EntityModel<ReservaDTO> obterReserva(@PathVariable Long id) {
         ReservaDTO reservaDTO = reservaService.obterPorId(id);
 
@@ -55,6 +60,7 @@ public class ReservaController {
     }
 
     @PostMapping
+    @ApiOperation(value = "Criar uma nova reserva", notes = "Cria uma nova reserva com os dados fornecidos")
     public EntityModel<ReservaDTO> criarReserva(@Valid @RequestBody ReservaCreateDTO reservaCreateDTO) {
         ReservaDTO reservaDTO = reservaService.criarReserva(reservaCreateDTO);
 
@@ -64,6 +70,7 @@ public class ReservaController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualizar uma reserva", notes = "Atualiza as informações de uma reserva existente pelo seu ID")
     public EntityModel<ReservaDTO> atualizarReserva(@PathVariable Long id, @Valid @RequestBody ReservaCreateDTO reservaCreateDTO) {
         ReservaDTO reservaDTO = reservaService.atualizarReserva(id, reservaCreateDTO);
 
@@ -73,6 +80,7 @@ public class ReservaController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Deletar uma reserva", notes = "Remove uma reserva pelo seu ID")
     public EntityModel<Void> deletarReserva(@PathVariable Long id) {
         reservaService.deletarReserva(id);
 

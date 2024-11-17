@@ -1,6 +1,5 @@
 package controller;
 
-
 import dto.Usuario.UsuarioCreateDTO;
 import dto.Usuario.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import service.UsuarioService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +23,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@Api(value = "Usuario Controller", tags = {"Usuários"})
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -32,6 +34,7 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Listar todos os usuários", notes = "Retorna uma lista paginada de todos os usuários")
     public CollectionModel<EntityModel<UsuarioDTO>> listarTodos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -49,6 +52,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Obter um usuário específico", notes = "Retorna os detalhes de um usuário pelo seu ID")
     public EntityModel<UsuarioDTO> obterUsuario(@PathVariable Long id) {
         UsuarioDTO usuarioDTO = usuarioService.obterPorId(id);
 
@@ -60,6 +64,7 @@ public class UsuarioController {
     }
 
     @PostMapping
+    @ApiOperation(value = "Criar um novo usuário", notes = "Cria um novo usuário com os dados fornecidos")
     public EntityModel<UsuarioDTO> criarUsuario(@Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
         UsuarioDTO usuarioDTO = usuarioService.criarUsuario(usuarioCreateDTO);
 
@@ -69,6 +74,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualizar um usuário", notes = "Atualiza as informações de um usuário existente pelo seu ID")
     public EntityModel<UsuarioDTO> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
         UsuarioDTO usuarioDTO = usuarioService.atualizarUsuario(id, usuarioCreateDTO);
 
@@ -78,6 +84,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Deletar um usuário", notes = "Remove um usuário pelo seu ID")
     public EntityModel<Void> deletarUsuario(@PathVariable Long id) {
         usuarioService.deletarUsuario(id);
 
@@ -85,4 +92,3 @@ public class UsuarioController {
                 linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"));
     }
 }
-

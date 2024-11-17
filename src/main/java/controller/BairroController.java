@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/bairros")
+@Api(value = "Bairro Controller", tags = {"Bairros"})
 public class BairroController {
 
     private final BairroService bairroService;
@@ -28,6 +31,7 @@ public class BairroController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Listar todos os bairros", notes = "Retorna uma lista paginada de todos os bairros")
     public CollectionModel<EntityModel<BairroDTO>> listarTodos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -45,6 +49,7 @@ public class BairroController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Obter um bairro específico", notes = "Retorna os detalhes do bairro fornecendo o ID")
     public EntityModel<BairroDTO> obterBairro(@PathVariable Long id) {
         BairroDTO bairroDTO = bairroService.obterPorId(id);
         return EntityModel.of(bairroDTO,
@@ -53,6 +58,7 @@ public class BairroController {
     }
 
     @PostMapping
+    @ApiOperation(value = "Criar um novo bairro", notes = "Cria um novo bairro com as informações fornecidas")
     public EntityModel<BairroDTO> criarBairro(@RequestBody BairroCreateDTO bairroCreateDTO) {
         BairroDTO bairroDTO = bairroService.criarBairro(bairroCreateDTO);
         return EntityModel.of(bairroDTO,
@@ -61,6 +67,7 @@ public class BairroController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualizar um bairro", notes = "Atualiza as informações de um bairro existente")
     public EntityModel<BairroDTO> atualizarBairro(@PathVariable Long id, @RequestBody BairroCreateDTO bairroCreateDTO) {
         BairroDTO bairroDTO = bairroService.atualizarBairro(id, bairroCreateDTO);
         return EntityModel.of(bairroDTO,
@@ -69,6 +76,7 @@ public class BairroController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Deletar um bairro", notes = "Remove um bairro com o ID fornecido")
     public EntityModel<Void> deletarBairro(@PathVariable Long id) {
         bairroService.deletarBairro(id);
         return EntityModel.of(null,

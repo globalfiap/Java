@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/fontes-energia")
+@Api(value = "Fonte de Energia Controller", tags = {"Fontes de Energia"})
 public class FonteEnergiaController {
 
     private final FonteEnergiaService fonteEnergiaService;
@@ -28,6 +31,7 @@ public class FonteEnergiaController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Listar todas as fontes de energia", notes = "Retorna uma lista paginada de todas as fontes de energia disponíveis")
     public CollectionModel<EntityModel<FonteEnergiaDTO>> listarTodas(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -45,6 +49,7 @@ public class FonteEnergiaController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Obter uma fonte de energia específica", notes = "Retorna os detalhes de uma fonte de energia pelo seu ID")
     public EntityModel<FonteEnergiaDTO> obterFonteEnergia(@PathVariable Long id) {
         FonteEnergiaDTO fonteDTO = fonteEnergiaService.obterPorId(id);
         return EntityModel.of(fonteDTO,
@@ -53,6 +58,7 @@ public class FonteEnergiaController {
     }
 
     @PostMapping
+    @ApiOperation(value = "Criar uma nova fonte de energia", notes = "Cria uma nova fonte de energia com os dados fornecidos")
     public EntityModel<FonteEnergiaDTO> criarFonteEnergia(@RequestBody FonteEnergiaCreateDTO fonteCreateDTO) {
         FonteEnergiaDTO fonteDTO = fonteEnergiaService.criarFonteEnergia(fonteCreateDTO);
         return EntityModel.of(fonteDTO,
@@ -61,6 +67,7 @@ public class FonteEnergiaController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualizar uma fonte de energia", notes = "Atualiza as informações de uma fonte de energia existente pelo seu ID")
     public EntityModel<FonteEnergiaDTO> atualizarFonteEnergia(@PathVariable Long id, @RequestBody FonteEnergiaCreateDTO fonteCreateDTO) {
         FonteEnergiaDTO fonteDTO = fonteEnergiaService.atualizarFonteEnergia(id, fonteCreateDTO);
         return EntityModel.of(fonteDTO,
@@ -69,9 +76,11 @@ public class FonteEnergiaController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Deletar uma fonte de energia", notes = "Remove uma fonte de energia pelo seu ID")
     public EntityModel<Void> deletarFonteEnergia(@PathVariable Long id) {
         fonteEnergiaService.deletarFonteEnergia(id);
         return EntityModel.of(null,
                 linkTo(methodOn(FonteEnergiaController.class).listarTodas(0, 10)).withRel("fontes-energia"));
     }
 }
+

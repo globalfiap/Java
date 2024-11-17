@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,6 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/veiculos")
+@Api(value = "Veiculo Controller", tags = {"Veículos"})
 public class VeiculoController {
 
     private final VeiculoService veiculoService;
@@ -29,6 +33,7 @@ public class VeiculoController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Listar todos os veículos", notes = "Retorna uma lista paginada de todos os veículos")
     public CollectionModel<EntityModel<VeiculoDTO>> listarTodos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -46,6 +51,7 @@ public class VeiculoController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Obter um veículo específico", notes = "Retorna os detalhes de um veículo pelo seu ID")
     public EntityModel<VeiculoDTO> obterVeiculo(@PathVariable Long id) {
         VeiculoDTO veiculoDTO = veiculoService.obterPorId(id);
 
@@ -57,6 +63,7 @@ public class VeiculoController {
     }
 
     @PostMapping
+    @ApiOperation(value = "Criar um novo veículo", notes = "Cria um novo veículo com os dados fornecidos")
     public EntityModel<VeiculoDTO> criarVeiculo(@Valid @RequestBody VeiculoCreateDTO veiculoCreateDTO) {
         VeiculoDTO veiculoDTO = veiculoService.criarVeiculo(veiculoCreateDTO);
 
@@ -66,6 +73,7 @@ public class VeiculoController {
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Atualizar um veículo", notes = "Atualiza as informações de um veículo existente pelo seu ID")
     public EntityModel<VeiculoDTO> atualizarVeiculo(@PathVariable Long id, @Valid @RequestBody VeiculoCreateDTO veiculoCreateDTO) {
         VeiculoDTO veiculoDTO = veiculoService.atualizarVeiculo(id, veiculoCreateDTO);
 
@@ -75,6 +83,7 @@ public class VeiculoController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Deletar um veículo", notes = "Remove um veículo pelo seu ID")
     public EntityModel<Void> deletarVeiculo(@PathVariable Long id) {
         veiculoService.deletarVeiculo(id);
 
