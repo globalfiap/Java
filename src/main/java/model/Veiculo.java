@@ -2,6 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "veiculo", uniqueConstraints = @UniqueConstraint(columnNames = "marca"))
 public class Veiculo {
