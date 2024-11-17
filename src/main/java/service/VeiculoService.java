@@ -2,6 +2,8 @@ package service;
 
 import dto.Veiculo.VeiculoCreateDTO;
 import dto.Veiculo.VeiculoDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import exception.ResourceNotFoundException;
 import exception.InvalidRequestException;
 import model.Usuario;
@@ -131,5 +133,10 @@ public class VeiculoService {
             throw new ResourceNotFoundException("Veículo não encontrado com ID: " + id);
         }
         veiculoRepository.deleteById(id);
+    }
+
+    public Page<VeiculoDTO> listarTodosPaginado(Pageable pageable) {
+        Page<Veiculo> veiculos = veiculoRepository.findAll(pageable);
+        return veiculos.map(veiculo -> modelMapper.map(veiculo, VeiculoDTO.class));
     }
 }

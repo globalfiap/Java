@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,14 +28,20 @@ public class GastoCarregamentoController {
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<GastoCarregamentoDTO>> listarTodos() {
-        List<EntityModel<GastoCarregamentoDTO>> gastos = gastoCarregamentoService.listarTodos().stream()
+    public CollectionModel<EntityModel<GastoCarregamentoDTO>> listarTodos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<GastoCarregamentoDTO> gastosPaginados = gastoCarregamentoService.listarTodosPaginado(pageable);
+
+        List<EntityModel<GastoCarregamentoDTO>> gastos = gastosPaginados.getContent().stream()
                 .map(gasto -> EntityModel.of(gasto,
                         linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(gasto.getGastoId())).withSelfRel(),
-                        linkTo(methodOn(GastoCarregamentoController.class).listarTodos()).withRel("gastos-carregamento")))
+                        linkTo(methodOn(GastoCarregamentoController.class).listarTodos(page, size)).withRel("gastos-carregamento")))
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(gastos, linkTo(methodOn(GastoCarregamentoController.class).listarTodos()).withSelfRel());
+        return CollectionModel.of(gastos, linkTo(methodOn(GastoCarregamentoController.class).listarTodos(page, size)).withSelfRel());
     }
 
     @GetMapping("/{id}")
@@ -40,7 +49,7 @@ public class GastoCarregamentoController {
         GastoCarregamentoDTO gastoDTO = gastoCarregamentoService.obterPorId(id);
         return EntityModel.of(gastoDTO,
                 linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(id)).withSelfRel(),
-                linkTo(methodOn(GastoCarregamentoController.class).listarTodos()).withRel("gastos-carregamento"));
+                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel("gastos-carregamento"));
     }
 
     @PostMapping
@@ -48,7 +57,7 @@ public class GastoCarregamentoController {
         GastoCarregamentoDTO gastoDTO = gastoCarregamentoService.criarGastoCarregamento(gastoCreateDTO);
         return EntityModel.of(gastoDTO,
                 linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(gastoDTO.getGastoId())).withSelfRel(),
-                linkTo(methodOn(GastoCarregamentoController.class).listarTodos()).withRel("gastos-carregamento"));
+                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel("gastos-carregamento"));
     }
 
     @PutMapping("/{id}")
@@ -56,13 +65,13 @@ public class GastoCarregamentoController {
         GastoCarregamentoDTO gastoDTO = gastoCarregamentoService.atualizarGastoCarregamento(id, gastoCreateDTO);
         return EntityModel.of(gastoDTO,
                 linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(id)).withSelfRel(),
-                linkTo(methodOn(GastoCarregamentoController.class).listarTodos()).withRel("gastos-carregamento"));
+                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel("gastos-carregamento"));
     }
 
     @DeleteMapping("/{id}")
     public EntityModel<Void> deletarGastoCarregamento(@PathVariable Long id) {
         gastoCarregamentoService.deletarGastoCarregamento(id);
         return EntityModel.of(null,
-                linkTo(methodOn(GastoCarregamentoController.class).listarTodos()).withRel("gastos-carregamento"));
+                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel("gastos-carregamento"));
     }
 }

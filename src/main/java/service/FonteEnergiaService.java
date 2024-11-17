@@ -7,6 +7,8 @@ import exception.InvalidRequestException;
 import model.FonteEnergia;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.FonteEnergiaRepository;
 
@@ -25,11 +27,9 @@ public class FonteEnergiaService {
         this.modelMapper = modelMapper;
     }
 
-    public List<FonteEnergiaDTO> listarTodas() {
-        List<FonteEnergia> fontes = fonteEnergiaRepository.findAll();
-        return fontes.stream()
-                .map(fonte -> modelMapper.map(fonte, FonteEnergiaDTO.class))
-                .collect(Collectors.toList());
+    public Page<FonteEnergiaDTO> listarTodasPaginado(Pageable pageable) {
+        Page<FonteEnergia> fontes = fonteEnergiaRepository.findAll(pageable);
+        return fontes.map(fonte -> modelMapper.map(fonte, FonteEnergiaDTO.class));
     }
 
     public FonteEnergiaDTO obterPorId(Long id) {

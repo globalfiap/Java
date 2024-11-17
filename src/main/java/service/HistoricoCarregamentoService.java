@@ -11,6 +11,8 @@ import model.EstacaoRecarga;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import repository.HistoricoCarregamentoRepository;
 import repository.UsuarioRepository;
 import repository.VeiculoRepository;
@@ -39,6 +41,11 @@ public class HistoricoCarregamentoService {
         this.veiculoRepository = veiculoRepository;
         this.estacaoRecargaRepository = estacaoRecargaRepository;
         this.modelMapper = modelMapper;
+    }
+
+    public Page<HistoricoCarregamentoDTO> listarTodosPaginado(Pageable pageable) {
+        Page<HistoricoCarregamento> historicos = historicoCarregamentoRepository.findAll(pageable);
+        return historicos.map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class));
     }
 
     public List<HistoricoCarregamentoDTO> listarTodos() {

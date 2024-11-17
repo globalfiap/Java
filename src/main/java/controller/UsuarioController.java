@@ -3,6 +3,10 @@ package controller;
 
 import dto.Usuario.UsuarioCreateDTO;
 import dto.Usuario.UsuarioDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
@@ -17,24 +21,31 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
+    @Autowired
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<UsuarioDTO>> listarTodos() {
-        List<EntityModel<UsuarioDTO>> usuarios = usuarioService.listarTodos().stream()
+    public CollectionModel<EntityModel<UsuarioDTO>> listarTodos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<UsuarioDTO> usuariosPaginados = usuarioService.listarTodosPaginado(pageable);
+
+        List<EntityModel<UsuarioDTO>> usuarios = usuariosPaginados.stream()
                 .map(usuarioDTO -> EntityModel.of(usuarioDTO,
                         linkTo(methodOn(UsuarioController.class).obterUsuario(usuarioDTO.getUsuarioId())).withSelfRel(),
-                        linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("usuarios")))
+                        linkTo(methodOn(UsuarioController.class).listarTodos(page, size)).withRel("usuarios")))
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(usuarios, linkTo(methodOn(UsuarioController.class).listarTodos()).withSelfRel());
+        return CollectionModel.of(usuarios, linkTo(methodOn(UsuarioController.class).listarTodos(page, size)).withSelfRel());
     }
 
     @GetMapping("/{id}")
@@ -43,7 +54,7 @@ public class UsuarioController {
 
         return EntityModel.of(usuarioDTO,
                 linkTo(methodOn(UsuarioController.class).obterUsuario(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("usuarios"),
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"),
                 linkTo(methodOn(UsuarioController.class).deletarUsuario(id)).withRel("delete"),
                 linkTo(methodOn(UsuarioController.class).atualizarUsuario(id, null)).withRel("update"));
     }
@@ -54,7 +65,7 @@ public class UsuarioController {
 
         return EntityModel.of(usuarioDTO,
                 linkTo(methodOn(UsuarioController.class).obterUsuario(usuarioDTO.getUsuarioId())).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("usuarios"));
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"));
     }
 
     @PutMapping("/{id}")
@@ -63,7 +74,7 @@ public class UsuarioController {
 
         return EntityModel.of(usuarioDTO,
                 linkTo(methodOn(UsuarioController.class).obterUsuario(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("usuarios"));
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"));
     }
 
     @DeleteMapping("/{id}")
@@ -71,6 +82,7 @@ public class UsuarioController {
         usuarioService.deletarUsuario(id);
 
         return EntityModel.of(null,
-                linkTo(methodOn(UsuarioController.class).listarTodos()).withRel("usuarios"));
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"));
     }
 }
+

@@ -8,6 +8,8 @@ import model.Bairro;
 import model.Concessionaria;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.BairroRepository;
 import repository.ConcessionariaRepository;
@@ -29,11 +31,9 @@ public class ConcessionariaService {
         this.modelMapper = modelMapper;
     }
 
-    public List<ConcessionariaDTO> listarTodos() {
-        List<Concessionaria> concessionarias = concessionariaRepository.findAll();
-        return concessionarias.stream()
-                .map(concessionaria -> modelMapper.map(concessionaria, ConcessionariaDTO.class))
-                .collect(Collectors.toList());
+    public Page<ConcessionariaDTO> listarTodosPaginado(Pageable pageable) {
+        Page<Concessionaria> concessionarias = concessionariaRepository.findAll(pageable);
+        return concessionarias.map(concessionaria -> modelMapper.map(concessionaria, ConcessionariaDTO.class));
     }
 
     public ConcessionariaDTO obterPorId(Long id) {

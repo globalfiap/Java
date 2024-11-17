@@ -10,6 +10,8 @@ import model.EstacaoRecarga;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import repository.ReservaRepository;
 import repository.UsuarioRepository;
 import repository.EstacaoRecargaRepository;
@@ -33,6 +35,11 @@ public class ReservaService {
         this.usuarioRepository = usuarioRepository;
         this.estacaoRecargaRepository = estacaoRecargaRepository;
         this.modelMapper = modelMapper;
+    }
+
+    public Page<ReservaDTO> listarTodasPaginado(Pageable pageable) {
+        Page<Reserva> reservas = reservaRepository.findAll(pageable);
+        return reservas.map(reserva -> modelMapper.map(reserva, ReservaDTO.class));
     }
 
     public List<ReservaDTO> listarTodas() {

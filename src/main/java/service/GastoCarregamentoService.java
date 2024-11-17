@@ -8,6 +8,8 @@ import model.GastoCarregamento;
 import model.HistoricoCarregamento;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.GastoCarregamentoRepository;
 import repository.HistoricoCarregamentoRepository;
@@ -32,11 +34,9 @@ public class GastoCarregamentoService {
         this.modelMapper = modelMapper;
     }
 
-    public List<GastoCarregamentoDTO> listarTodos() {
-        List<GastoCarregamento> gastos = gastoCarregamentoRepository.findAll();
-        return gastos.stream()
-                .map(gasto -> modelMapper.map(gasto, GastoCarregamentoDTO.class))
-                .collect(Collectors.toList());
+    public Page<GastoCarregamentoDTO> listarTodosPaginado(Pageable pageable) {
+        Page<GastoCarregamento> gastos = gastoCarregamentoRepository.findAll(pageable);
+        return gastos.map(gasto -> modelMapper.map(gasto, GastoCarregamentoDTO.class));
     }
 
     public List<GastoCarregamentoDTO> listarPorHistoricoCarregamento(Long historicoId) {

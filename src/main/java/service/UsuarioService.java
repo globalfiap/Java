@@ -7,6 +7,8 @@ import exception.InvalidRequestException;
 import model.Usuario;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.UsuarioRepository;
 
@@ -25,11 +27,10 @@ public class UsuarioService {
         this.modelMapper = modelMapper;
     }
 
-    public List<UsuarioDTO> listarTodos() {
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        return usuarios.stream()
-                .map(usuario -> modelMapper.map(usuario, UsuarioDTO.class))
-                .collect(Collectors.toList());
+    // Método para listar todos os usuários com paginação
+    public Page<UsuarioDTO> listarTodosPaginado(Pageable pageable) {
+        Page<Usuario> usuarios = usuarioRepository.findAll(pageable);
+        return usuarios.map(usuario -> modelMapper.map(usuario, UsuarioDTO.class));
     }
 
     public UsuarioDTO obterPorId(Long id) {
@@ -63,7 +64,6 @@ public class UsuarioService {
         }
 
         Usuario usuario = modelMapper.map(usuarioCreateDTO, Usuario.class);
-        // Senha não será criptografada aqui
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
         return modelMapper.map(usuarioSalvo, UsuarioDTO.class);
     }
@@ -84,7 +84,7 @@ public class UsuarioService {
             usuarioExistente.setEmail(usuarioCreateDTO.getEmail());
         }
         if (usuarioCreateDTO.getSenha() != null && !usuarioCreateDTO.getSenha().isEmpty()) {
-            usuarioExistente.setSenha(usuarioCreateDTO.getSenha()); // Senha não criptografada
+            usuarioExistente.setSenha(usuarioCreateDTO.getSenha());
         }
         if (usuarioCreateDTO.getTelefone() != null && !usuarioCreateDTO.getTelefone().isEmpty()) {
             usuarioExistente.setTelefone(usuarioCreateDTO.getTelefone());

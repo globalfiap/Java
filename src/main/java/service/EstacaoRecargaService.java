@@ -8,6 +8,8 @@ import model.Bairro;
 import model.EstacaoRecarga;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.BairroRepository;
 import repository.EstacaoRecargaRepository;
@@ -29,11 +31,9 @@ public class EstacaoRecargaService {
         this.modelMapper = modelMapper;
     }
 
-    public List<EstacaoRecargaDTO> listarTodos() {
-        List<EstacaoRecarga> estacoes = estacaoRecargaRepository.findAll();
-        return estacoes.stream()
-                .map(estacao -> modelMapper.map(estacao, EstacaoRecargaDTO.class))
-                .collect(Collectors.toList());
+    public Page<EstacaoRecargaDTO> listarTodosPaginado(Pageable pageable) {
+        Page<EstacaoRecarga> estacoes = estacaoRecargaRepository.findAll(pageable);
+        return estacoes.map(estacao -> modelMapper.map(estacao, EstacaoRecargaDTO.class));
     }
 
     public EstacaoRecargaDTO obterPorId(Long id) {

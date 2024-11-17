@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import service.VeiculoService;
 
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,14 +29,20 @@ public class VeiculoController {
     }
 
     @GetMapping
-    public CollectionModel<EntityModel<VeiculoDTO>> listarTodos() {
-        List<EntityModel<VeiculoDTO>> veiculos = veiculoService.listarTodos().stream()
+    public CollectionModel<EntityModel<VeiculoDTO>> listarTodos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<VeiculoDTO> veiculosPaginados = veiculoService.listarTodosPaginado(pageable);
+
+        List<EntityModel<VeiculoDTO>> veiculos = veiculosPaginados.getContent().stream()
                 .map(veiculoDTO -> EntityModel.of(veiculoDTO,
                         linkTo(methodOn(VeiculoController.class).obterVeiculo(veiculoDTO.getVeiculoId())).withSelfRel(),
-                        linkTo(methodOn(VeiculoController.class).listarTodos()).withRel("veiculos")))
+                        linkTo(methodOn(VeiculoController.class).listarTodos(page, size)).withRel("veiculos")))
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(veiculos, linkTo(methodOn(VeiculoController.class).listarTodos()).withSelfRel());
+        return CollectionModel.of(veiculos, linkTo(methodOn(VeiculoController.class).listarTodos(page, size)).withSelfRel());
     }
 
     @GetMapping("/{id}")
@@ -41,7 +51,7 @@ public class VeiculoController {
 
         return EntityModel.of(veiculoDTO,
                 linkTo(methodOn(VeiculoController.class).obterVeiculo(id)).withSelfRel(),
-                linkTo(methodOn(VeiculoController.class).listarTodos()).withRel("veiculos"),
+                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel("veiculos"),
                 linkTo(methodOn(VeiculoController.class).deletarVeiculo(id)).withRel("delete"),
                 linkTo(methodOn(VeiculoController.class).atualizarVeiculo(id, null)).withRel("update"));
     }
@@ -52,7 +62,7 @@ public class VeiculoController {
 
         return EntityModel.of(veiculoDTO,
                 linkTo(methodOn(VeiculoController.class).obterVeiculo(veiculoDTO.getVeiculoId())).withSelfRel(),
-                linkTo(methodOn(VeiculoController.class).listarTodos()).withRel("veiculos"));
+                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel("veiculos"));
     }
 
     @PutMapping("/{id}")
@@ -61,7 +71,7 @@ public class VeiculoController {
 
         return EntityModel.of(veiculoDTO,
                 linkTo(methodOn(VeiculoController.class).obterVeiculo(id)).withSelfRel(),
-                linkTo(methodOn(VeiculoController.class).listarTodos()).withRel("veiculos"));
+                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel("veiculos"));
     }
 
     @DeleteMapping("/{id}")
@@ -69,6 +79,6 @@ public class VeiculoController {
         veiculoService.deletarVeiculo(id);
 
         return EntityModel.of(null,
-                linkTo(methodOn(VeiculoController.class).listarTodos()).withRel("veiculos"));
+                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel("veiculos"));
     }
 }

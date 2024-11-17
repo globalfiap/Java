@@ -7,10 +7,11 @@ import exception.InvalidRequestException;
 import model.Bairro;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.BairroRepository;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,11 +26,9 @@ public class BairroService {
         this.modelMapper = modelMapper;
     }
 
-    public List<BairroDTO> listarTodos() {
-        List<Bairro> bairros = bairroRepository.findAll();
-        return bairros.stream()
-                .map(bairro -> modelMapper.map(bairro, BairroDTO.class))
-                .collect(Collectors.toList());
+    public Page<BairroDTO> listarTodosPaginado(Pageable pageable) {
+        Page<Bairro> bairros = bairroRepository.findAll(pageable);
+        return bairros.map(bairro -> modelMapper.map(bairro, BairroDTO.class));
     }
 
     public BairroDTO obterPorId(Long id) {
@@ -66,16 +65,5 @@ public class BairroService {
         Bairro bairro = bairroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + id));
         bairroRepository.delete(bairro);
-    }
-
-    // Novo método para listar bairros por nome ou parte do nome
-    public List<BairroDTO> listarPorNome(String nome) {
-        List<Bairro> bairros = bairroRepository.findByNomeContainingIgnoreCase(nome);
-        if (bairros.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhum bairro encontrado contendo o nome: " + nome);
-        }
-        return bairros.stream()
-                .map(bairro -> modelMapper.map(bairro, BairroDTO.class))
-                .collect(Collectors.toList());
     }
 }

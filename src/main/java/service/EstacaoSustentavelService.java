@@ -9,6 +9,8 @@ import model.EstacaoSustentavel;
 import model.FonteEnergia;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.EstacaoRecargaRepository;
 import repository.EstacaoSustentavelRepository;
@@ -36,11 +38,9 @@ public class EstacaoSustentavelService {
         this.modelMapper = modelMapper;
     }
 
-    public List<EstacaoSustentavelDTO> listarTodos() {
-        List<EstacaoSustentavel> estacoes = estacaoSustentavelRepository.findAll();
-        return estacoes.stream()
-                .map(estacao -> modelMapper.map(estacao, EstacaoSustentavelDTO.class))
-                .collect(Collectors.toList());
+    public Page<EstacaoSustentavelDTO> listarTodosPaginado(Pageable pageable) {
+        Page<EstacaoSustentavel> estacoes = estacaoSustentavelRepository.findAll(pageable);
+        return estacoes.map(estacao -> modelMapper.map(estacao, EstacaoSustentavelDTO.class));
     }
 
     public EstacaoSustentavelDTO obterPorId(Long id) {
