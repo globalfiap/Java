@@ -44,7 +44,7 @@ public class ConcessionariaCreateDTO {
         this.marca = marca;
     }
 
-    public Boolean getTemEstacaoRecarga() {
+    public Integer getTemEstacaoRecarga() {
         return temEstacaoRecarga;
     }
 
