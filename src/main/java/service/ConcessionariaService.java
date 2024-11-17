@@ -56,6 +56,7 @@ public class ConcessionariaService {
 
         Concessionaria concessionaria = modelMapper.map(concessionariaCreateDTO, Concessionaria.class);
         concessionaria.setBairro(bairro);
+        concessionaria.setTemEstacaoRecarga(concessionariaCreateDTO.getTemEstacaoRecarga() ? 1 : 0);
 
         Concessionaria concessionariaSalva = concessionariaRepository.save(concessionaria);
         return modelMapper.map(concessionariaSalva, ConcessionariaDTO.class);
@@ -75,7 +76,7 @@ public class ConcessionariaService {
 
         concessionariaExistente.setNome(concessionariaCreateDTO.getNome());
         concessionariaExistente.setMarca(concessionariaCreateDTO.getMarca());
-        concessionariaExistente.setTemEstacaoRecarga(concessionariaCreateDTO.getTemEstacaoRecarga());
+        concessionariaExistente.setTemEstacaoRecarga(concessionariaCreateDTO.getTemEstacaoRecarga() ? 1 : 0);
 
         if (concessionariaCreateDTO.getBairroId() != null && !concessionariaCreateDTO.getBairroId().equals(concessionariaExistente.getBairro().getBairroId())) {
             Bairro novoBairro = bairroRepository.findById(concessionariaCreateDTO.getBairroId())
