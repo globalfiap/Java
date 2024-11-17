@@ -3,6 +3,7 @@ package service;
 import dto.Veiculo.VeiculoCreateDTO;
 import dto.Veiculo.VeiculoDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.Usuario;
 import model.Veiculo;
 import org.modelmapper.ModelMapper;
@@ -43,8 +44,11 @@ public class VeiculoService {
 
     public VeiculoDTO criarVeiculo(VeiculoCreateDTO veiculoCreateDTO) {
         // Verificar se a marca já está em uso
+        if (veiculoCreateDTO.getMarca() == null || veiculoCreateDTO.getMarca().isEmpty()) {
+            throw new InvalidRequestException("A marca do veículo é obrigatória.");
+        }
         if (veiculoRepository.existsByMarca(veiculoCreateDTO.getMarca())) {
-            throw new IllegalArgumentException("A marca já está em uso.");
+            throw new InvalidRequestException("A marca já está em uso.");
         }
 
         // Obter o usuário associado
@@ -66,12 +70,12 @@ public class VeiculoService {
         if (veiculoCreateDTO.getMarca() != null && !veiculoCreateDTO.getMarca().equals(veiculoExistente.getMarca())) {
             // Verificar se a nova marca já está em uso
             if (veiculoRepository.existsByMarca(veiculoCreateDTO.getMarca())) {
-                throw new IllegalArgumentException("A marca já está em uso.");
+                throw new InvalidRequestException("A marca já está em uso.");
             }
             veiculoExistente.setMarca(veiculoCreateDTO.getMarca());
         }
 
-        if (veiculoCreateDTO.getModelo() != null) {
+        if (veiculoCreateDTO.getModelo() != null && !veiculoCreateDTO.getModelo().isEmpty()) {
             veiculoExistente.setModelo(veiculoCreateDTO.getModelo());
         }
 

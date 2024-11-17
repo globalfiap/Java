@@ -3,6 +3,7 @@ package service;
 import dto.Concessionaria.ConcessionariaCreateDTO;
 import dto.Concessionaria.ConcessionariaDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.Bairro;
 import model.Concessionaria;
 import org.modelmapper.ModelMapper;
@@ -42,6 +43,14 @@ public class ConcessionariaService {
     }
 
     public ConcessionariaDTO criarConcessionaria(ConcessionariaCreateDTO concessionariaCreateDTO) {
+        if (concessionariaCreateDTO.getNome() == null || concessionariaCreateDTO.getNome().isEmpty()) {
+            throw new InvalidRequestException("Nome da concessionária é obrigatório.");
+        }
+
+        if (concessionariaCreateDTO.getMarca() == null || concessionariaCreateDTO.getMarca().isEmpty()) {
+            throw new InvalidRequestException("Marca da concessionária é obrigatória.");
+        }
+
         Bairro bairro = bairroRepository.findById(concessionariaCreateDTO.getBairroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + concessionariaCreateDTO.getBairroId()));
 
@@ -55,6 +64,14 @@ public class ConcessionariaService {
     public ConcessionariaDTO atualizarConcessionaria(Long id, ConcessionariaCreateDTO concessionariaCreateDTO) {
         Concessionaria concessionariaExistente = concessionariaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Concessionária não encontrada com ID: " + id));
+
+        if (concessionariaCreateDTO.getNome() != null && concessionariaCreateDTO.getNome().isEmpty()) {
+            throw new InvalidRequestException("Nome da concessionária não pode ser vazio.");
+        }
+
+        if (concessionariaCreateDTO.getMarca() != null && concessionariaCreateDTO.getMarca().isEmpty()) {
+            throw new InvalidRequestException("Marca da concessionária não pode ser vazia.");
+        }
 
         concessionariaExistente.setNome(concessionariaCreateDTO.getNome());
         concessionariaExistente.setMarca(concessionariaCreateDTO.getMarca());

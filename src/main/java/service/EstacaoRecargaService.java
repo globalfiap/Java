@@ -3,6 +3,7 @@ package service;
 import dto.EstacaoRecarga.EstacaoRecargaCreateDTO;
 import dto.EstacaoRecarga.EstacaoRecargaDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.Bairro;
 import model.EstacaoRecarga;
 import org.modelmapper.ModelMapper;
@@ -42,8 +43,16 @@ public class EstacaoRecargaService {
     }
 
     public EstacaoRecargaDTO criarEstacaoRecarga(EstacaoRecargaCreateDTO estacaoCreateDTO) {
+        if (estacaoCreateDTO.getNome() == null || estacaoCreateDTO.getNome().isEmpty()) {
+            throw new InvalidRequestException("Nome da estação de recarga é obrigatório.");
+        }
+
         Bairro bairro = bairroRepository.findById(estacaoCreateDTO.getBairroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + estacaoCreateDTO.getBairroId()));
+
+        if (estacaoCreateDTO.getLatitude() == null || estacaoCreateDTO.getLongitude() == null) {
+            throw new InvalidRequestException("Latitude e Longitude são obrigatórios.");
+        }
 
         EstacaoRecarga estacaoRecarga = modelMapper.map(estacaoCreateDTO, EstacaoRecarga.class);
         estacaoRecarga.setBairro(bairro);
@@ -55,6 +64,10 @@ public class EstacaoRecargaService {
     public EstacaoRecargaDTO atualizarEstacaoRecarga(Long id, EstacaoRecargaCreateDTO estacaoCreateDTO) {
         EstacaoRecarga estacaoExistente = estacaoRecargaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + id));
+
+        if (estacaoCreateDTO.getNome() != null && estacaoCreateDTO.getNome().isEmpty()) {
+            throw new InvalidRequestException("Nome da estação de recarga não pode ser vazio.");
+        }
 
         estacaoExistente.setNome(estacaoCreateDTO.getNome());
         estacaoExistente.setLatitude(estacaoCreateDTO.getLatitude());

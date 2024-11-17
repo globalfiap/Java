@@ -3,6 +3,7 @@ package service;
 import dto.HistoricoCarregamento.HistoricoCarregamentoCreateDTO;
 import dto.HistoricoCarregamento.HistoricoCarregamentoDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.HistoricoCarregamento;
 import model.Usuario;
 import model.Veiculo;
@@ -54,6 +55,14 @@ public class HistoricoCarregamentoService {
     }
 
     public HistoricoCarregamentoDTO criarHistorico(HistoricoCarregamentoCreateDTO historicoCreateDTO) {
+        if (historicoCreateDTO.getUsuarioId() == null || historicoCreateDTO.getVeiculoId() == null || historicoCreateDTO.getEstacaoId() == null) {
+            throw new InvalidRequestException("ID de usuário, veículo e estação de recarga são obrigatórios.");
+        }
+
+        if (historicoCreateDTO.getKwhConsumidos() == null || historicoCreateDTO.getKwhConsumidos() <= 0) {
+            throw new InvalidRequestException("Kwh consumidos deve ser maior que zero.");
+        }
+
         Usuario usuario = usuarioRepository.findById(historicoCreateDTO.getUsuarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + historicoCreateDTO.getUsuarioId()));
         Veiculo veiculo = veiculoRepository.findById(historicoCreateDTO.getVeiculoId())
@@ -75,8 +84,12 @@ public class HistoricoCarregamentoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Histórico de carregamento não encontrado com ID: " + id));
 
         if (historicoCreateDTO.getKwhConsumidos() != null) {
+            if (historicoCreateDTO.getKwhConsumidos() <= 0) {
+                throw new InvalidRequestException("Kwh consumidos deve ser maior que zero.");
+            }
             historicoExistente.setKwhConsumidos(historicoCreateDTO.getKwhConsumidos());
         }
+
         if (historicoCreateDTO.getDataCarregamento() != null) {
             historicoExistente.setDataCarregamento(historicoCreateDTO.getDataCarregamento());
         }

@@ -3,6 +3,7 @@ package service;
 import dto.Usuario.UsuarioCreateDTO;
 import dto.Usuario.UsuarioDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.Usuario;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +40,11 @@ public class UsuarioService {
 
     public UsuarioDTO criarUsuario(UsuarioCreateDTO usuarioCreateDTO) {
         // Verificar se o email já está em uso
+        if (usuarioCreateDTO.getEmail() == null || usuarioCreateDTO.getEmail().isEmpty()) {
+            throw new InvalidRequestException("O email é obrigatório.");
+        }
         if (usuarioRepository.existsByEmail(usuarioCreateDTO.getEmail())) {
-            throw new IllegalArgumentException("O email já está em uso.");
+            throw new InvalidRequestException("O email já está em uso.");
         }
 
         Usuario usuario = modelMapper.map(usuarioCreateDTO, Usuario.class);
@@ -54,20 +58,20 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
 
         // Atualizar os campos
-        if (usuarioCreateDTO.getNome() != null) {
+        if (usuarioCreateDTO.getNome() != null && !usuarioCreateDTO.getNome().isEmpty()) {
             usuarioExistente.setNome(usuarioCreateDTO.getNome());
         }
-        if (usuarioCreateDTO.getEmail() != null && !usuarioCreateDTO.getEmail().equals(usuarioExistente.getEmail())) {
+        if (usuarioCreateDTO.getEmail() != null && !usuarioCreateDTO.getEmail().isEmpty() && !usuarioCreateDTO.getEmail().equals(usuarioExistente.getEmail())) {
             // Verificar se o novo email já está em uso
             if (usuarioRepository.existsByEmail(usuarioCreateDTO.getEmail())) {
-                throw new IllegalArgumentException("O email já está em uso.");
+                throw new InvalidRequestException("O email já está em uso.");
             }
             usuarioExistente.setEmail(usuarioCreateDTO.getEmail());
         }
         if (usuarioCreateDTO.getSenha() != null && !usuarioCreateDTO.getSenha().isEmpty()) {
             usuarioExistente.setSenha(usuarioCreateDTO.getSenha()); // Senha não criptografada
         }
-        if (usuarioCreateDTO.getTelefone() != null) {
+        if (usuarioCreateDTO.getTelefone() != null && !usuarioCreateDTO.getTelefone().isEmpty()) {
             usuarioExistente.setTelefone(usuarioCreateDTO.getTelefone());
         }
 

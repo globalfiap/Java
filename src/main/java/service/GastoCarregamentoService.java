@@ -3,6 +3,7 @@ package service;
 import dto.GastoCarregamento.GastoCarregamentoCreateDTO;
 import dto.GastoCarregamento.GastoCarregamentoDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.GastoCarregamento;
 import model.HistoricoCarregamento;
 import org.modelmapper.ModelMapper;
@@ -44,6 +45,14 @@ public class GastoCarregamentoService {
     }
 
     public GastoCarregamentoDTO criarGastoCarregamento(GastoCarregamentoCreateDTO gastoCreateDTO) {
+        if (gastoCreateDTO.getHistoricoId() == null) {
+            throw new InvalidRequestException("O ID do histórico de carregamento é obrigatório.");
+        }
+
+        if (gastoCreateDTO.getCustoTotal() == null || gastoCreateDTO.getCustoTotal() <= 0) {
+            throw new InvalidRequestException("O custo total deve ser maior que zero.");
+        }
+
         HistoricoCarregamento historico = historicoCarregamentoRepository.findById(gastoCreateDTO.getHistoricoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Histórico de carregamento não encontrado com ID: " + gastoCreateDTO.getHistoricoId()));
 
@@ -59,6 +68,9 @@ public class GastoCarregamentoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Gasto de carregamento não encontrado com ID: " + id));
 
         if (gastoCreateDTO.getCustoTotal() != null) {
+            if (gastoCreateDTO.getCustoTotal() <= 0) {
+                throw new InvalidRequestException("O custo total deve ser maior que zero.");
+            }
             gastoExistente.setCustoTotal(gastoCreateDTO.getCustoTotal());
         }
 

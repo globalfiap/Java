@@ -3,6 +3,7 @@ package service;
 import dto.EstacaoSustentavel.EstacaoSustentavelCreateDTO;
 import dto.EstacaoSustentavel.EstacaoSustentavelDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.EstacaoRecarga;
 import model.EstacaoSustentavel;
 import model.FonteEnergia;
@@ -46,11 +47,17 @@ public class EstacaoSustentavelService {
     }
 
     public EstacaoSustentavelDTO criarEstacaoSustentavel(EstacaoSustentavelCreateDTO estacaoCreateDTO) {
+        // Verificar se a estação de recarga existe
         EstacaoRecarga estacaoRecarga = estacaoRecargaRepository.findById(estacaoCreateDTO.getEstacaoId())
                 .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + estacaoCreateDTO.getEstacaoId()));
 
+        // Verificar se a fonte de energia existe
         FonteEnergia fonteEnergia = fonteEnergiaRepository.findById(estacaoCreateDTO.getFonteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + estacaoCreateDTO.getFonteId()));
+
+        if (estacaoCreateDTO.getReducaoCarbono() == null || estacaoCreateDTO.getReducaoCarbono() <= 0) {
+            throw new InvalidRequestException("O valor de redução de carbono deve ser maior que zero.");
+        }
 
         EstacaoSustentavel estacaoSustentavel = modelMapper.map(estacaoCreateDTO, EstacaoSustentavel.class);
         estacaoSustentavel.setEstacaoRecarga(estacaoRecarga);
@@ -71,6 +78,9 @@ public class EstacaoSustentavelService {
         }
 
         if (estacaoCreateDTO.getReducaoCarbono() != null) {
+            if (estacaoCreateDTO.getReducaoCarbono() <= 0) {
+                throw new InvalidRequestException("O valor de redução de carbono deve ser maior que zero.");
+            }
             estacaoExistente.setReducaoCarbono(estacaoCreateDTO.getReducaoCarbono());
         }
 

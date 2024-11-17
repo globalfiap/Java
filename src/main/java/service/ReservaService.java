@@ -3,6 +3,7 @@ package service;
 import dto.Reserva.ReservaCreateDTO;
 import dto.Reserva.ReservaDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.Reserva;
 import model.Usuario;
 import model.EstacaoRecarga;
@@ -47,6 +48,16 @@ public class ReservaService {
     }
 
     public ReservaDTO criarReserva(ReservaCreateDTO reservaCreateDTO) {
+        if (reservaCreateDTO.getUsuarioId() == null) {
+            throw new InvalidRequestException("O ID do usuário é obrigatório.");
+        }
+        if (reservaCreateDTO.getEstacaoId() == null) {
+            throw new InvalidRequestException("O ID da estação de recarga é obrigatório.");
+        }
+        if (reservaCreateDTO.getDataReserva() == null) {
+            throw new InvalidRequestException("A data da reserva é obrigatória.");
+        }
+
         Usuario usuario = usuarioRepository.findById(reservaCreateDTO.getUsuarioId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + reservaCreateDTO.getUsuarioId()));
         EstacaoRecarga estacaoRecarga = estacaoRecargaRepository.findById(reservaCreateDTO.getEstacaoId())

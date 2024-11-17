@@ -3,6 +3,7 @@ package service;
 import dto.FonteEnergia.FonteEnergiaCreateDTO;
 import dto.FonteEnergia.FonteEnergiaDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.FonteEnergia;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,10 @@ public class FonteEnergiaService {
     }
 
     public FonteEnergiaDTO criarFonteEnergia(FonteEnergiaCreateDTO fonteCreateDTO) {
+        if (fonteCreateDTO.getTipoEnergia() == null || fonteCreateDTO.getTipoEnergia().isEmpty()) {
+            throw new InvalidRequestException("O tipo de energia é obrigatório e não pode ser vazio.");
+        }
+
         FonteEnergia fonte = modelMapper.map(fonteCreateDTO, FonteEnergia.class);
         FonteEnergia fonteSalva = fonteEnergiaRepository.save(fonte);
         return modelMapper.map(fonteSalva, FonteEnergiaDTO.class);
@@ -47,9 +52,11 @@ public class FonteEnergiaService {
         FonteEnergia fonteExistente = fonteEnergiaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + id));
 
-        if (fonteCreateDTO.getTipoEnergia() != null) {
-            fonteExistente.setTipoEnergia(fonteCreateDTO.getTipoEnergia());
+        if (fonteCreateDTO.getTipoEnergia() == null || fonteCreateDTO.getTipoEnergia().isEmpty()) {
+            throw new InvalidRequestException("O tipo de energia é obrigatório e não pode ser vazio.");
         }
+
+        fonteExistente.setTipoEnergia(fonteCreateDTO.getTipoEnergia());
 
         FonteEnergia fonteAtualizada = fonteEnergiaRepository.save(fonteExistente);
         return modelMapper.map(fonteAtualizada, FonteEnergiaDTO.class);
