@@ -57,11 +57,11 @@ public class VeiculoCreateDTO {
         this.ano = ano;
     }
 
-    public Boolean getEletrico() {
+    public Boolean getIsEletrico() {
         return isEletrico;
     }
 
-    public void setEletrico(Boolean eletrico) {
-        isEletrico = eletrico;
+    public void setIsEletrico(Boolean isEletrico) {
+        this.isEletrico = isEletrico;
     }
 }
