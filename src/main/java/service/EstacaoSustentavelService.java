@@ -26,7 +26,10 @@ public class EstacaoSustentavelService {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EstacaoSustentavelService(EstacaoSustentavelRepository estacaoSustentavelRepository, EstacaoRecargaRepository estacaoRecargaRepository, FonteEnergiaRepository fonteEnergiaRepository, ModelMapper modelMapper) {
+    public EstacaoSustentavelService(EstacaoSustentavelRepository estacaoSustentavelRepository,
+                                     EstacaoRecargaRepository estacaoRecargaRepository,
+                                     FonteEnergiaRepository fonteEnergiaRepository,
+                                     ModelMapper modelMapper) {
         this.estacaoSustentavelRepository = estacaoSustentavelRepository;
         this.estacaoRecargaRepository = estacaoRecargaRepository;
         this.fonteEnergiaRepository = fonteEnergiaRepository;
@@ -92,5 +95,16 @@ public class EstacaoSustentavelService {
         EstacaoSustentavel estacaoSustentavel = estacaoSustentavelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estação sustentável não encontrada com ID: " + id));
         estacaoSustentavelRepository.delete(estacaoSustentavel);
+    }
+
+    // Novo método para listar Estações Sustentáveis por Tipo de Energia
+    public List<EstacaoSustentavelDTO> listarPorTipoEnergia(String tipoEnergia) {
+        List<EstacaoSustentavel> estacoes = estacaoSustentavelRepository.findByFonteEnergiaTipoEnergiaContainingIgnoreCase(tipoEnergia);
+        if (estacoes.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma estação sustentável encontrada para o tipo de energia: " + tipoEnergia);
+        }
+        return estacoes.stream()
+                .map(estacao -> modelMapper.map(estacao, EstacaoSustentavelDTO.class))
+                .collect(Collectors.toList());
     }
 }

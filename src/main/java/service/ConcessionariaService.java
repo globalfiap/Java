@@ -93,4 +93,26 @@ public class ConcessionariaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Concessionária não encontrada com ID: " + id));
         concessionariaRepository.delete(concessionaria);
     }
+
+    // Novo método para listar concessionárias por Bairro
+    public List<ConcessionariaDTO> listarPorBairro(Long bairroId) {
+        List<Concessionaria> concessionarias = concessionariaRepository.findByBairroBairroId(bairroId);
+        if (concessionarias.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma concessionária encontrada para o bairro com ID: " + bairroId);
+        }
+        return concessionarias.stream()
+                .map(concessionaria -> modelMapper.map(concessionaria, ConcessionariaDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    // Novo método para listar concessionárias por Marca
+    public List<ConcessionariaDTO> listarPorMarca(String marca) {
+        List<Concessionaria> concessionarias = concessionariaRepository.findByMarcaContainingIgnoreCase(marca);
+        if (concessionarias.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma concessionária encontrada para a marca: " + marca);
+        }
+        return concessionarias.stream()
+                .map(concessionaria -> modelMapper.map(concessionaria, ConcessionariaDTO.class))
+                .collect(Collectors.toList());
+    }
 }

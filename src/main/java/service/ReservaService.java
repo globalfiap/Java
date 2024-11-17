@@ -14,6 +14,7 @@ import repository.ReservaRepository;
 import repository.UsuarioRepository;
 import repository.EstacaoRecargaRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,36 @@ public class ReservaService {
         Reserva reserva = reservaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada com ID: " + id));
         return modelMapper.map(reserva, ReservaDTO.class);
+    }
+
+    public List<ReservaDTO> listarPorStatus(Integer status) {
+        List<Reserva> reservas = reservaRepository.findByStatus(status);
+        if (reservas.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma reserva encontrada com o status: " + status);
+        }
+        return reservas.stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<ReservaDTO> listarPorUsuario(Long usuarioId) {
+        List<Reserva> reservas = reservaRepository.findByUsuarioUsuarioId(usuarioId);
+        if (reservas.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma reserva encontrada para o usuário com ID: " + usuarioId);
+        }
+        return reservas.stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<ReservaDTO> listarPorIntervaloDeDatas(LocalDateTime inicio, LocalDateTime fim) {
+        List<Reserva> reservas = reservaRepository.findByDataReservaBetween(inicio, fim);
+        if (reservas.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma reserva encontrada no intervalo de datas especificado.");
+        }
+        return reservas.stream()
+                .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
+                .collect(Collectors.toList());
     }
 
     public ReservaDTO criarReserva(ReservaCreateDTO reservaCreateDTO) {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import repository.GastoCarregamentoRepository;
 import repository.HistoricoCarregamentoRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,26 @@ public class GastoCarregamentoService {
 
     public List<GastoCarregamentoDTO> listarTodos() {
         List<GastoCarregamento> gastos = gastoCarregamentoRepository.findAll();
+        return gastos.stream()
+                .map(gasto -> modelMapper.map(gasto, GastoCarregamentoDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<GastoCarregamentoDTO> listarPorHistoricoCarregamento(Long historicoId) {
+        List<GastoCarregamento> gastos = gastoCarregamentoRepository.findByHistoricoCarregamentoHistoricoId(historicoId);
+        if (gastos.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum gasto de carregamento encontrado para o histórico com ID: " + historicoId);
+        }
+        return gastos.stream()
+                .map(gasto -> modelMapper.map(gasto, GastoCarregamentoDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<GastoCarregamentoDTO> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        List<GastoCarregamento> gastos = gastoCarregamentoRepository.findByDataGastoBetween(inicio, fim);
+        if (gastos.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum gasto de carregamento encontrado entre as datas fornecidas.");
+        }
         return gastos.stream()
                 .map(gasto -> modelMapper.map(gasto, GastoCarregamentoDTO.class))
                 .collect(Collectors.toList());

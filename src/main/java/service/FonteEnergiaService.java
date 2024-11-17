@@ -39,10 +39,7 @@ public class FonteEnergiaService {
     }
 
     public FonteEnergiaDTO criarFonteEnergia(FonteEnergiaCreateDTO fonteCreateDTO) {
-        if (fonteCreateDTO.getTipoEnergia() == null || fonteCreateDTO.getTipoEnergia().isEmpty()) {
-            throw new InvalidRequestException("O tipo de energia é obrigatório e não pode ser vazio.");
-        }
-
+        validarFonteEnergia(fonteCreateDTO);
         FonteEnergia fonte = modelMapper.map(fonteCreateDTO, FonteEnergia.class);
         FonteEnergia fonteSalva = fonteEnergiaRepository.save(fonte);
         return modelMapper.map(fonteSalva, FonteEnergiaDTO.class);
@@ -51,11 +48,7 @@ public class FonteEnergiaService {
     public FonteEnergiaDTO atualizarFonteEnergia(Long id, FonteEnergiaCreateDTO fonteCreateDTO) {
         FonteEnergia fonteExistente = fonteEnergiaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + id));
-
-        if (fonteCreateDTO.getTipoEnergia() == null || fonteCreateDTO.getTipoEnergia().isEmpty()) {
-            throw new InvalidRequestException("O tipo de energia é obrigatório e não pode ser vazio.");
-        }
-
+        validarFonteEnergia(fonteCreateDTO);
         fonteExistente.setTipoEnergia(fonteCreateDTO.getTipoEnergia());
 
         FonteEnergia fonteAtualizada = fonteEnergiaRepository.save(fonteExistente);
@@ -66,5 +59,23 @@ public class FonteEnergiaService {
         FonteEnergia fonte = fonteEnergiaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + id));
         fonteEnergiaRepository.delete(fonte);
+    }
+
+    // Novo método para listar fontes de energia por nome ou parte do nome
+    public List<FonteEnergiaDTO> listarPorTipoEnergia(String tipoEnergia) {
+        List<FonteEnergia> fontes = fonteEnergiaRepository.findByTipoEnergiaContainingIgnoreCase(tipoEnergia);
+        if (fontes.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma fonte de energia encontrada contendo: " + tipoEnergia);
+        }
+        return fontes.stream()
+                .map(fonte -> modelMapper.map(fonte, FonteEnergiaDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    // Método para validar a criação e atualização de fontes de energia
+    private void validarFonteEnergia(FonteEnergiaCreateDTO fonteCreateDTO) {
+        if (fonteCreateDTO.getTipoEnergia() == null || fonteCreateDTO.getTipoEnergia().isEmpty()) {
+            throw new InvalidRequestException("O tipo de energia é obrigatório e não pode ser vazio.");
+        }
     }
 }

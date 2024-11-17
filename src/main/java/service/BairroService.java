@@ -3,6 +3,7 @@ package service;
 import dto.Bairro.BairroCreateDTO;
 import dto.Bairro.BairroDTO;
 import exception.ResourceNotFoundException;
+import exception.InvalidRequestException;
 import model.Bairro;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,10 @@ public class BairroService {
     }
 
     public BairroDTO criarBairro(BairroCreateDTO bairroCreateDTO) {
+        if (bairroCreateDTO.getNome() == null || bairroCreateDTO.getNome().isEmpty()) {
+            throw new InvalidRequestException("Nome do bairro é obrigatório.");
+        }
+
         Bairro bairro = modelMapper.map(bairroCreateDTO, Bairro.class);
         Bairro bairroSalvo = bairroRepository.save(bairro);
         return modelMapper.map(bairroSalvo, BairroDTO.class);
@@ -46,6 +51,10 @@ public class BairroService {
     public BairroDTO atualizarBairro(Long id, BairroCreateDTO bairroCreateDTO) {
         Bairro bairroExistente = bairroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + id));
+
+        if (bairroCreateDTO.getNome() == null || bairroCreateDTO.getNome().isEmpty()) {
+            throw new InvalidRequestException("Nome do bairro não pode ser vazio.");
+        }
 
         bairroExistente.setNome(bairroCreateDTO.getNome());
 
@@ -57,5 +66,16 @@ public class BairroService {
         Bairro bairro = bairroRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + id));
         bairroRepository.delete(bairro);
+    }
+
+    // Novo método para listar bairros por nome ou parte do nome
+    public List<BairroDTO> listarPorNome(String nome) {
+        List<Bairro> bairros = bairroRepository.findByNomeContainingIgnoreCase(nome);
+        if (bairros.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum bairro encontrado contendo o nome: " + nome);
+        }
+        return bairros.stream()
+                .map(bairro -> modelMapper.map(bairro, BairroDTO.class))
+                .collect(Collectors.toList());
     }
 }

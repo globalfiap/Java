@@ -42,11 +42,39 @@ public class VeiculoService {
         return modelMapper.map(veiculo, VeiculoDTO.class);
     }
 
+    public List<VeiculoDTO> buscarPorMarca(String marca) {
+        List<Veiculo> veiculos = veiculoRepository.buscarVeiculosPorMarca(marca);
+        if (veiculos.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum veículo encontrado com a marca: " + marca);
+        }
+        return veiculos.stream()
+                .map(veiculo -> modelMapper.map(veiculo, VeiculoDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<VeiculoDTO> listarVeiculosPorUsuario(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + usuarioId));
+
+        List<Veiculo> veiculos = veiculoRepository.findByUsuarioNome(usuario.getNome());
+        return veiculos.stream()
+                .map(veiculo -> modelMapper.map(veiculo, VeiculoDTO.class))
+                .collect(Collectors.toList());
+    }
+
     public VeiculoDTO criarVeiculo(VeiculoCreateDTO veiculoCreateDTO) {
-        // Verificar se a marca já está em uso
+        // Verificar se os campos obrigatórios estão preenchidos
         if (veiculoCreateDTO.getMarca() == null || veiculoCreateDTO.getMarca().isEmpty()) {
             throw new InvalidRequestException("A marca do veículo é obrigatória.");
         }
+        if (veiculoCreateDTO.getModelo() == null || veiculoCreateDTO.getModelo().isEmpty()) {
+            throw new InvalidRequestException("O modelo do veículo é obrigatório.");
+        }
+        if (veiculoCreateDTO.getAno() == null) {
+            throw new InvalidRequestException("O ano do veículo é obrigatório.");
+        }
+
+        // Verificar se a marca já está em uso
         if (veiculoRepository.existsByMarca(veiculoCreateDTO.getMarca())) {
             throw new InvalidRequestException("A marca já está em uso.");
         }

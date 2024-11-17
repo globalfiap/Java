@@ -54,6 +54,26 @@ public class HistoricoCarregamentoService {
         return modelMapper.map(historico, HistoricoCarregamentoDTO.class);
     }
 
+    public List<HistoricoCarregamentoDTO> listarPorUsuario(Long usuarioId) {
+        List<HistoricoCarregamento> historicos = historicoCarregamentoRepository.findByUsuarioUsuarioId(usuarioId);
+        if (historicos.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum histórico de carregamento encontrado para o usuário com ID: " + usuarioId);
+        }
+        return historicos.stream()
+                .map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<HistoricoCarregamentoDTO> listarPorVeiculo(Long veiculoId) {
+        List<HistoricoCarregamento> historicos = historicoCarregamentoRepository.findByVeiculoVeiculoId(veiculoId);
+        if (historicos.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum histórico de carregamento encontrado para o veículo com ID: " + veiculoId);
+        }
+        return historicos.stream()
+                .map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class))
+                .collect(Collectors.toList());
+    }
+
     public HistoricoCarregamentoDTO criarHistorico(HistoricoCarregamentoCreateDTO historicoCreateDTO) {
         if (historicoCreateDTO.getUsuarioId() == null || historicoCreateDTO.getVeiculoId() == null || historicoCreateDTO.getEstacaoId() == null) {
             throw new InvalidRequestException("ID de usuário, veículo e estação de recarga são obrigatórios.");

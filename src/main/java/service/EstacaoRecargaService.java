@@ -90,4 +90,26 @@ public class EstacaoRecargaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + id));
         estacaoRecargaRepository.delete(estacaoRecarga);
     }
+
+    // Novo método para listar estações de recarga por Bairro
+    public List<EstacaoRecargaDTO> listarPorBairro(Long bairroId) {
+        List<EstacaoRecarga> estacoes = estacaoRecargaRepository.findByBairroBairroId(bairroId);
+        if (estacoes.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma estação de recarga encontrada para o bairro com ID: " + bairroId);
+        }
+        return estacoes.stream()
+                .map(estacao -> modelMapper.map(estacao, EstacaoRecargaDTO.class))
+                .collect(Collectors.toList());
+    }
+
+    // Novo método para listar estações de recarga por Tipo de Carregador
+    public List<EstacaoRecargaDTO> listarPorTipoCarregador(String tipoCarregador) {
+        List<EstacaoRecarga> estacoes = estacaoRecargaRepository.findByTipoCarregadorContainingIgnoreCase(tipoCarregador);
+        if (estacoes.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhuma estação de recarga encontrada com o tipo de carregador: " + tipoCarregador);
+        }
+        return estacoes.stream()
+                .map(estacao -> modelMapper.map(estacao, EstacaoRecargaDTO.class))
+                .collect(Collectors.toList());
+    }
 }

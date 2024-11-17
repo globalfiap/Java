@@ -38,6 +38,16 @@ public class UsuarioService {
         return modelMapper.map(usuario, UsuarioDTO.class);
     }
 
+    public List<UsuarioDTO> buscarPorNome(String nome) {
+        List<Usuario> usuarios = usuarioRepository.findByNomeContainingIgnoreCase(nome);
+        if (usuarios.isEmpty()) {
+            throw new ResourceNotFoundException("Nenhum usuário encontrado com o nome: " + nome);
+        }
+        return usuarios.stream()
+                .map(usuario -> modelMapper.map(usuario, UsuarioDTO.class))
+                .collect(Collectors.toList());
+    }
+
     public UsuarioDTO criarUsuario(UsuarioCreateDTO usuarioCreateDTO) {
         // Verificar se o email já está em uso
         if (usuarioCreateDTO.getEmail() == null || usuarioCreateDTO.getEmail().isEmpty()) {
@@ -45,6 +55,11 @@ public class UsuarioService {
         }
         if (usuarioRepository.existsByEmail(usuarioCreateDTO.getEmail())) {
             throw new InvalidRequestException("O email já está em uso.");
+        }
+
+        // Verificar se o nome é fornecido
+        if (usuarioCreateDTO.getNome() == null || usuarioCreateDTO.getNome().isEmpty()) {
+            throw new InvalidRequestException("O nome é obrigatório.");
         }
 
         Usuario usuario = modelMapper.map(usuarioCreateDTO, Usuario.class);
