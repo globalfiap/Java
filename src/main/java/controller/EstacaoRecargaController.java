@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +23,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequestMapping("/estacoes-recarga")
-@Api(value = "Estação de Recarga Controller", tags = {"Estações de Recarga"})
+@Tag(name = "Estações de Recarga", description = "Controle das Estações de Recarga")
+@Validated
 public class EstacaoRecargaController {
 
     private final EstacaoRecargaService estacaoRecargaService;
@@ -31,7 +35,7 @@ public class EstacaoRecargaController {
     }
 
     @GetMapping
-    @ApiOperation(value = "Listar todas as estações de recarga", notes = "Retorna uma lista paginada de todas as estações de recarga")
+    @Operation(summary = "Listar todas as estações de recarga", description = "Retorna uma lista paginada de todas as estações de recarga")
     public CollectionModel<EntityModel<EstacaoRecargaDTO>> listarTodos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -41,46 +45,45 @@ public class EstacaoRecargaController {
 
         List<EntityModel<EstacaoRecargaDTO>> estacoes = estacoesPaginadas.getContent().stream()
                 .map(estacao -> EntityModel.of(estacao,
-                        linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(estacao.getEstacaoId())).withSelfRel(),
-                        linkTo(methodOn(EstacaoRecargaController.class).listarTodos(page, size)).withRel("estacoes-recarga")))
+                        linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(estacao.getEstacaoId())).withSelfRel()))
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(estacoes, linkTo(methodOn(EstacaoRecargaController.class).listarTodos(page, size)).withSelfRel());
+        return CollectionModel.of(estacoes,
+                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(page, size)).withSelfRel());
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Obter uma estação de recarga específica", notes = "Retorna os detalhes de uma estação de recarga fornecendo o ID")
+    @Operation(summary = "Obter uma estação de recarga específica", description = "Retorna os detalhes de uma estação de recarga fornecendo o ID")
     public EntityModel<EstacaoRecargaDTO> obterEstacaoRecarga(@PathVariable Long id) {
         EstacaoRecargaDTO estacaoDTO = estacaoRecargaService.obterPorId(id);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(id)).withSelfRel(),
-                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("estacoes-recarga"));
+                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("listarTodos"));
     }
 
     @PostMapping
-    @ApiOperation(value = "Criar uma nova estação de recarga", notes = "Cria uma nova estação de recarga com as informações fornecidas")
-    public EntityModel<EstacaoRecargaDTO> criarEstacaoRecarga(@RequestBody EstacaoRecargaCreateDTO estacaoCreateDTO) {
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Criar uma nova estação de recarga", description = "Cria uma nova estação de recarga com as informações fornecidas")
+    public EntityModel<EstacaoRecargaDTO> criarEstacaoRecarga(@Valid @RequestBody EstacaoRecargaCreateDTO estacaoCreateDTO) {
         EstacaoRecargaDTO estacaoDTO = estacaoRecargaService.criarEstacaoRecarga(estacaoCreateDTO);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(estacaoDTO.getEstacaoId())).withSelfRel(),
-                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("estacoes-recarga"));
+                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("listarTodos"));
     }
 
     @PutMapping("/{id}")
-    @ApiOperation(value = "Atualizar uma estação de recarga", notes = "Atualiza as informações de uma estação de recarga existente")
-    public EntityModel<EstacaoRecargaDTO> atualizarEstacaoRecarga(@PathVariable Long id, @RequestBody EstacaoRecargaCreateDTO estacaoCreateDTO) {
+    @Operation(summary = "Atualizar uma estação de recarga", description = "Atualiza as informações de uma estação de recarga existente")
+    public EntityModel<EstacaoRecargaDTO> atualizarEstacaoRecarga(@PathVariable Long id, @Valid @RequestBody EstacaoRecargaCreateDTO estacaoCreateDTO) {
         EstacaoRecargaDTO estacaoDTO = estacaoRecargaService.atualizarEstacaoRecarga(id, estacaoCreateDTO);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(id)).withSelfRel(),
-                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("estacoes-recarga"));
+                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("listarTodos"));
     }
 
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "Deletar uma estação de recarga", notes = "Remove uma estação de recarga fornecendo o ID")
-    public EntityModel<Void> deletarEstacaoRecarga(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Deletar uma estação de recarga", description = "Remove uma estação de recarga fornecendo o ID")
+    public void deletarEstacaoRecarga(@PathVariable Long id) {
         estacaoRecargaService.deletarEstacaoRecarga(id);
-        return EntityModel.of(null,
-                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("estacoes-recarga"));
     }
 }
-
