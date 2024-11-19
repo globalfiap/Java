@@ -12,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import repository.BairroRepository;
 
-import java.util.stream.Collectors;
-
 @Service
 public class BairroService {
 
