@@ -19,14 +19,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/fontes-energia", produces = "application/json", consumes = "application/json")
+@RequestMapping("/fontes-energia")
 @Tag(name = "Fontes de Energia", description = "Fonte de Energia Controller")
 public class FonteEnergiaController {
+
+    private static final String LISTAR_TODAS = "listarTodas";
 
     private final FonteEnergiaService fonteEnergiaService;
 
@@ -52,12 +53,13 @@ public class FonteEnergiaController {
         List<EntityModel<FonteEnergiaDTO>> fontes = fontesPaginadas.getContent().stream()
                 .map(fonte -> EntityModel.of(fonte,
                         linkTo(methodOn(FonteEnergiaController.class).obterFonteEnergia(fonte.getFonteId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList(); // Substituído por Stream.toList()
 
-        return CollectionModel.of(fontes, linkTo(methodOn(FonteEnergiaController.class).listarTodas(page, size)).withSelfRel());
+        return CollectionModel.of(fontes,
+                linkTo(methodOn(FonteEnergiaController.class).listarTodas(page, size)).withSelfRel());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Obter uma fonte de energia específica", description = "Retorna os detalhes de uma fonte de energia pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fonte de energia encontrada"),
@@ -69,7 +71,7 @@ public class FonteEnergiaController {
         FonteEnergiaDTO fonteDTO = fonteEnergiaService.obterPorId(id);
         return EntityModel.of(fonteDTO,
                 linkTo(methodOn(FonteEnergiaController.class).obterFonteEnergia(id)).withSelfRel(),
-                linkTo(methodOn(FonteEnergiaController.class).listarTodas(0, 10)).withRel("listarTodas"));
+                linkTo(methodOn(FonteEnergiaController.class).listarTodas(0, 10)).withRel(LISTAR_TODAS)); // Substituído literal por constante
     }
 
     @PostMapping
@@ -84,10 +86,10 @@ public class FonteEnergiaController {
         FonteEnergiaDTO fonteDTO = fonteEnergiaService.criarFonteEnergia(fonteCreateDTO);
         return EntityModel.of(fonteDTO,
                 linkTo(methodOn(FonteEnergiaController.class).obterFonteEnergia(fonteDTO.getFonteId())).withSelfRel(),
-                linkTo(methodOn(FonteEnergiaController.class).listarTodas(0, 10)).withRel("listarTodas"));
+                linkTo(methodOn(FonteEnergiaController.class).listarTodas(0, 10)).withRel(LISTAR_TODAS)); // Substituído literal por constante
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma fonte de energia", description = "Atualiza as informações de uma fonte de energia existente pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Fonte de energia atualizada com sucesso"),
@@ -101,10 +103,10 @@ public class FonteEnergiaController {
         FonteEnergiaDTO fonteDTO = fonteEnergiaService.atualizarFonteEnergia(id, fonteCreateDTO);
         return EntityModel.of(fonteDTO,
                 linkTo(methodOn(FonteEnergiaController.class).obterFonteEnergia(id)).withSelfRel(),
-                linkTo(methodOn(FonteEnergiaController.class).listarTodas(0, 10)).withRel("listarTodas"));
+                linkTo(methodOn(FonteEnergiaController.class).listarTodas(0, 10)).withRel(LISTAR_TODAS)); // Substituído literal por constante
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Deletar uma fonte de energia", description = "Remove uma fonte de energia pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Fonte de energia deletada com sucesso"),

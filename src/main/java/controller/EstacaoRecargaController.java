@@ -20,15 +20,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/estacoes-recarga", produces = "application/json", consumes = "application/json")
+@RequestMapping("/estacoes-recarga")
 @Tag(name = "Estações de Recarga", description = "Controle das Estações de Recarga")
 @Validated
 public class EstacaoRecargaController {
+
+    private static final String LISTAR_TODOS = "listarTodos";
 
     private final EstacaoRecargaService estacaoRecargaService;
 
@@ -54,13 +55,13 @@ public class EstacaoRecargaController {
         List<EntityModel<EstacaoRecargaDTO>> estacoes = estacoesPaginadas.getContent().stream()
                 .map(estacao -> EntityModel.of(estacao,
                         linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(estacao.getEstacaoId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList(); // Substituído Stream.collect(Collectors.toList()) por toList()
 
         return CollectionModel.of(estacoes,
                 linkTo(methodOn(EstacaoRecargaController.class).listarTodos(page, size)).withSelfRel());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Obter uma estação de recarga específica", description = "Retorna os detalhes de uma estação de recarga fornecendo o ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Estação de recarga encontrada"),
@@ -72,7 +73,7 @@ public class EstacaoRecargaController {
         EstacaoRecargaDTO estacaoDTO = estacaoRecargaService.obterPorId(id);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(id)).withSelfRel(),
-                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
     @PostMapping
@@ -88,10 +89,10 @@ public class EstacaoRecargaController {
         EstacaoRecargaDTO estacaoDTO = estacaoRecargaService.criarEstacaoRecarga(estacaoCreateDTO);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(estacaoDTO.getEstacaoId())).withSelfRel(),
-                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma estação de recarga", description = "Atualiza as informações de uma estação de recarga existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Estação de recarga atualizada com sucesso"),
@@ -105,10 +106,10 @@ public class EstacaoRecargaController {
         EstacaoRecargaDTO estacaoDTO = estacaoRecargaService.atualizarEstacaoRecarga(id, estacaoCreateDTO);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoRecargaController.class).obterEstacaoRecarga(id)).withSelfRel(),
-                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(EstacaoRecargaController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletar uma estação de recarga", description = "Remove uma estação de recarga fornecendo o ID")
     @ApiResponses(value = {

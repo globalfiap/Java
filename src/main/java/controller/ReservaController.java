@@ -19,8 +19,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
@@ -29,6 +27,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class ReservaController {
 
     private final ReservaService reservaService;
+
+    // Constante para evitar literais duplicados
+    private static final String LISTAR_RESERVAS = "reservas";
 
     @Autowired
     public ReservaController(ReservaService reservaService) {
@@ -49,10 +50,11 @@ public class ReservaController {
         Pageable pageable = PageRequest.of(page, size);
         Page<ReservaDTO> reservasPaginadas = reservaService.listarTodasPaginado(pageable);
 
+        // Substituição de .collect(Collectors.toList()) por .toList()
         List<EntityModel<ReservaDTO>> reservas = reservasPaginadas.getContent().stream()
                 .map(reservaDTO -> EntityModel.of(reservaDTO,
                         linkTo(methodOn(ReservaController.class).obterReserva(reservaDTO.getReservaId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList();
 
         return CollectionModel.of(reservas, linkTo(methodOn(ReservaController.class).listarTodas(page, size)).withSelfRel());
     }
@@ -70,7 +72,7 @@ public class ReservaController {
 
         return EntityModel.of(reservaDTO,
                 linkTo(methodOn(ReservaController.class).obterReserva(id)).withSelfRel(),
-                linkTo(methodOn(ReservaController.class).listarTodas(0, 10)).withRel("reservas"));
+                linkTo(methodOn(ReservaController.class).listarTodas(0, 10)).withRel(LISTAR_RESERVAS));
     }
 
     @PostMapping
@@ -86,7 +88,7 @@ public class ReservaController {
 
         return EntityModel.of(reservaDTO,
                 linkTo(methodOn(ReservaController.class).obterReserva(reservaDTO.getReservaId())).withSelfRel(),
-                linkTo(methodOn(ReservaController.class).listarTodas(0, 10)).withRel("reservas"));
+                linkTo(methodOn(ReservaController.class).listarTodas(0, 10)).withRel(LISTAR_RESERVAS));
     }
 
     @PutMapping(value = "/{id}")
@@ -104,7 +106,7 @@ public class ReservaController {
 
         return EntityModel.of(reservaDTO,
                 linkTo(methodOn(ReservaController.class).obterReserva(id)).withSelfRel(),
-                linkTo(methodOn(ReservaController.class).listarTodas(0, 10)).withRel("reservas"));
+                linkTo(methodOn(ReservaController.class).listarTodas(0, 10)).withRel(LISTAR_RESERVAS));
     }
 
     @DeleteMapping(value = "/{id}")

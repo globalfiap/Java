@@ -18,14 +18,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/historico-carregamento", produces = "application/json", consumes = "application/json")
+@RequestMapping("/historico-carregamento")
 @Tag(name = "Histórico de Carregamento", description = "Histórico de Carregamento Controller")
 public class HistoricoCarregamentoController {
+
+    private static final String LISTAR_TODOS = "listarTodos";
 
     private final HistoricoCarregamentoService historicoCarregamentoService;
 
@@ -51,12 +52,13 @@ public class HistoricoCarregamentoController {
         List<EntityModel<HistoricoCarregamentoDTO>> historicos = historicosPaginados.getContent().stream()
                 .map(historico -> EntityModel.of(historico,
                         linkTo(methodOn(HistoricoCarregamentoController.class).obterHistorico(historico.getHistoricoId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList(); // Substituído Stream.collect(Collectors.toList()) por Stream.toList()
 
-        return CollectionModel.of(historicos, linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(page, size)).withSelfRel());
+        return CollectionModel.of(historicos,
+                linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(page, size)).withSelfRel());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Obter um histórico de carregamento específico", description = "Retorna os detalhes de um histórico de carregamento pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Histórico de carregamento encontrado"),
@@ -68,7 +70,7 @@ public class HistoricoCarregamentoController {
         HistoricoCarregamentoDTO historicoDTO = historicoCarregamentoService.obterPorId(id);
         return EntityModel.of(historicoDTO,
                 linkTo(methodOn(HistoricoCarregamentoController.class).obterHistorico(id)).withSelfRel(),
-                linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
     @PostMapping
@@ -83,10 +85,10 @@ public class HistoricoCarregamentoController {
         HistoricoCarregamentoDTO historicoDTO = historicoCarregamentoService.criarHistorico(historicoCreateDTO);
         return EntityModel.of(historicoDTO,
                 linkTo(methodOn(HistoricoCarregamentoController.class).obterHistorico(historicoDTO.getHistoricoId())).withSelfRel(),
-                linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar um histórico de carregamento", description = "Atualiza as informações de um histórico de carregamento existente pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Histórico de carregamento atualizado com sucesso"),
@@ -100,10 +102,10 @@ public class HistoricoCarregamentoController {
         HistoricoCarregamentoDTO historicoDTO = historicoCarregamentoService.atualizarHistorico(id, historicoCreateDTO);
         return EntityModel.of(historicoDTO,
                 linkTo(methodOn(HistoricoCarregamentoController.class).obterHistorico(id)).withSelfRel(),
-                linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(HistoricoCarregamentoController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Deletar um histórico de carregamento", description = "Remove um histórico de carregamento pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Histórico de carregamento deletado com sucesso"),

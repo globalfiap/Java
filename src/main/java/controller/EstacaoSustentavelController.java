@@ -19,14 +19,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/estacoes-sustentaveis", produces = "application/json", consumes = "application/json")
+@RequestMapping("/estacoes-sustentaveis")
 @Tag(name = "Estações Sustentáveis", description = "Controle das Estações Sustentáveis")
 public class EstacaoSustentavelController {
+
+    private static final String LISTAR_TODOS = "listarTodos";
 
     private final EstacaoSustentavelService estacaoSustentavelService;
 
@@ -52,13 +53,13 @@ public class EstacaoSustentavelController {
         List<EntityModel<EstacaoSustentavelDTO>> estacoes = estacoesPaginadas.getContent().stream()
                 .map(estacao -> EntityModel.of(estacao,
                         linkTo(methodOn(EstacaoSustentavelController.class).obterPorId(estacao.getEstacaoId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList(); // Substituído por Stream.toList()
 
         return CollectionModel.of(estacoes,
                 linkTo(methodOn(EstacaoSustentavelController.class).listarTodos(page, size)).withSelfRel());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Obter uma estação sustentável específica", description = "Retorna os detalhes de uma estação sustentável fornecendo o ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Estação sustentável encontrada"),
@@ -70,7 +71,7 @@ public class EstacaoSustentavelController {
         EstacaoSustentavelDTO estacaoDTO = estacaoSustentavelService.obterPorId(id);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoSustentavelController.class).obterPorId(id)).withSelfRel(),
-                linkTo(methodOn(EstacaoSustentavelController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(EstacaoSustentavelController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
     @PostMapping
@@ -85,10 +86,10 @@ public class EstacaoSustentavelController {
         EstacaoSustentavelDTO estacaoDTO = estacaoSustentavelService.criarEstacaoSustentavel(estacaoCreateDTO);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoSustentavelController.class).obterPorId(estacaoDTO.getEstacaoId())).withSelfRel(),
-                linkTo(methodOn(EstacaoSustentavelController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(EstacaoSustentavelController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma estação sustentável", description = "Atualiza as informações de uma estação sustentável existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Estação sustentável atualizada com sucesso"),
@@ -102,10 +103,10 @@ public class EstacaoSustentavelController {
         EstacaoSustentavelDTO estacaoDTO = estacaoSustentavelService.atualizarEstacaoSustentavel(id, estacaoCreateDTO);
         return EntityModel.of(estacaoDTO,
                 linkTo(methodOn(EstacaoSustentavelController.class).obterPorId(id)).withSelfRel(),
-                linkTo(methodOn(EstacaoSustentavelController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(EstacaoSustentavelController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Deletar uma estação sustentável", description = "Remove uma estação sustentável fornecendo o ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Estação sustentável deletada com sucesso"),

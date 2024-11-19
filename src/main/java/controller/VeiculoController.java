@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -28,6 +27,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 @RequestMapping(value = "/veiculos", produces = "application/json", consumes = "application/json")
 @Tag(name = "Veículos", description = "Controle dos Veículos")
 public class VeiculoController {
+
+    private static final String VEICULOS_REL = "veiculos"; // Constante para evitar duplicação
 
     private final VeiculoService veiculoService;
 
@@ -53,7 +54,7 @@ public class VeiculoController {
         List<EntityModel<VeiculoDTO>> veiculos = veiculosPaginados.getContent().stream()
                 .map(veiculoDTO -> EntityModel.of(veiculoDTO,
                         linkTo(methodOn(VeiculoController.class).obterVeiculo(veiculoDTO.getVeiculoId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList(); // Substituição de collect(Collectors.toList()) por toList()
 
         return CollectionModel.of(veiculos, linkTo(methodOn(VeiculoController.class).listarTodos(page, size)).withSelfRel());
     }
@@ -71,7 +72,7 @@ public class VeiculoController {
 
         return EntityModel.of(veiculoDTO,
                 linkTo(methodOn(VeiculoController.class).obterVeiculo(id)).withSelfRel(),
-                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel("veiculos"));
+                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel(VEICULOS_REL));
     }
 
     @PostMapping
@@ -87,7 +88,7 @@ public class VeiculoController {
 
         return EntityModel.of(veiculoDTO,
                 linkTo(methodOn(VeiculoController.class).obterVeiculo(veiculoDTO.getVeiculoId())).withSelfRel(),
-                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel("veiculos"));
+                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel(VEICULOS_REL));
     }
 
     @PutMapping(value = "/{id}")
@@ -105,7 +106,7 @@ public class VeiculoController {
 
         return EntityModel.of(veiculoDTO,
                 linkTo(methodOn(VeiculoController.class).obterVeiculo(id)).withSelfRel(),
-                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel("veiculos"));
+                linkTo(methodOn(VeiculoController.class).listarTodos(0, 10)).withRel(VEICULOS_REL));
     }
 
     @DeleteMapping(value = "/{id}")

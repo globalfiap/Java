@@ -19,14 +19,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/gastos-carregamento", produces = "application/json", consumes = "application/json")
+@RequestMapping("/gastos-carregamento")
 @Tag(name = "Gastos de Carregamento", description = "Gasto de Carregamento Controller")
 public class GastoCarregamentoController {
+
+    private static final String LISTAR_TODOS = "listarTodos";
 
     private final GastoCarregamentoService gastoCarregamentoService;
 
@@ -52,12 +53,12 @@ public class GastoCarregamentoController {
         List<EntityModel<GastoCarregamentoDTO>> gastos = gastosPaginados.getContent().stream()
                 .map(gasto -> EntityModel.of(gasto,
                         linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(gasto.getGastoId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList(); // Substituído por Stream.toList()
 
         return CollectionModel.of(gastos, linkTo(methodOn(GastoCarregamentoController.class).listarTodos(page, size)).withSelfRel());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Obter um gasto de carregamento específico", description = "Retorna os detalhes de um gasto de carregamento pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Gasto de carregamento encontrado"),
@@ -69,7 +70,7 @@ public class GastoCarregamentoController {
         GastoCarregamentoDTO gastoDTO = gastoCarregamentoService.obterPorId(id);
         return EntityModel.of(gastoDTO,
                 linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(id)).withSelfRel(),
-                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
     @PostMapping
@@ -84,10 +85,10 @@ public class GastoCarregamentoController {
         GastoCarregamentoDTO gastoDTO = gastoCarregamentoService.criarGastoCarregamento(gastoCreateDTO);
         return EntityModel.of(gastoDTO,
                 linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(gastoDTO.getGastoId())).withSelfRel(),
-                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar um gasto de carregamento", description = "Atualiza as informações de um gasto de carregamento existente pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Gasto de carregamento atualizado com sucesso"),
@@ -101,10 +102,10 @@ public class GastoCarregamentoController {
         GastoCarregamentoDTO gastoDTO = gastoCarregamentoService.atualizarGastoCarregamento(id, gastoCreateDTO);
         return EntityModel.of(gastoDTO,
                 linkTo(methodOn(GastoCarregamentoController.class).obterGastoCarregamento(id)).withSelfRel(),
-                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(GastoCarregamentoController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS)); // Substituído literal por constante
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Deletar um gasto de carregamento", description = "Remove um gasto de carregamento pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Gasto de carregamento deletado com sucesso"),

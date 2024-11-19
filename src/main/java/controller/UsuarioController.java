@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,6 +30,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+
+    // Definindo constante para "usuarios"
+    private static final String USUARIOS_REL = "usuarios";
 
     @Autowired
     public UsuarioController(UsuarioService usuarioService) {
@@ -54,7 +56,7 @@ public class UsuarioController {
         List<EntityModel<UsuarioDTO>> usuarios = usuariosPaginados.stream()
                 .map(usuarioDTO -> EntityModel.of(usuarioDTO,
                         linkTo(methodOn(UsuarioController.class).obterUsuario(usuarioDTO.getUsuarioId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList(); // Substituição de collect(Collectors.toList()) por toList()
 
         return CollectionModel.of(usuarios, linkTo(methodOn(UsuarioController.class).listarTodos(page, size)).withSelfRel());
     }
@@ -72,7 +74,7 @@ public class UsuarioController {
 
         return EntityModel.of(usuarioDTO,
                 linkTo(methodOn(UsuarioController.class).obterUsuario(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"));
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL)); // Usando constante
     }
 
     @PostMapping
@@ -88,7 +90,7 @@ public class UsuarioController {
 
         return EntityModel.of(usuarioDTO,
                 linkTo(methodOn(UsuarioController.class).obterUsuario(usuarioDTO.getUsuarioId())).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"));
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL)); // Usando constante
     }
 
     @PutMapping(value = "/{id}")
@@ -106,7 +108,7 @@ public class UsuarioController {
 
         return EntityModel.of(usuarioDTO,
                 linkTo(methodOn(UsuarioController.class).obterUsuario(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel("usuarios"));
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL)); // Usando constante
     }
 
     @DeleteMapping(value = "/{id}")

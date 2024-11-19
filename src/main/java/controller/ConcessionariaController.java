@@ -20,15 +20,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/concessionarias", produces = "application/json", consumes = "application/json")
+@RequestMapping("/concessionarias")
 @Tag(name = "Concessionárias", description = "Controle das Concessionárias")
 @Validated
 public class ConcessionariaController {
+
+    private static final String LISTAR_TODOS = "listarTodos";
 
     private final ConcessionariaService concessionariaService;
 
@@ -54,13 +55,13 @@ public class ConcessionariaController {
         List<EntityModel<ConcessionariaDTO>> concessionarias = concessionariasPaginadas.getContent().stream()
                 .map(concessionaria -> EntityModel.of(concessionaria,
                         linkTo(methodOn(ConcessionariaController.class).obterConcessionaria(concessionaria.getConcessionariaId())).withSelfRel()))
-                .collect(Collectors.toList());
+                .toList();
 
         return CollectionModel.of(concessionarias,
                 linkTo(methodOn(ConcessionariaController.class).listarTodos(page, size)).withSelfRel());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Obter uma concessionária específica", description = "Retorna os detalhes de uma concessionária fornecendo o ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Concessionária encontrada"),
@@ -72,7 +73,7 @@ public class ConcessionariaController {
         ConcessionariaDTO concessionariaDTO = concessionariaService.obterPorId(id);
         return EntityModel.of(concessionariaDTO,
                 linkTo(methodOn(ConcessionariaController.class).obterConcessionaria(id)).withSelfRel(),
-                linkTo(methodOn(ConcessionariaController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(ConcessionariaController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS));
     }
 
     @PostMapping
@@ -88,10 +89,10 @@ public class ConcessionariaController {
         ConcessionariaDTO concessionariaDTO = concessionariaService.criarConcessionaria(concessionariaCreateDTO);
         return EntityModel.of(concessionariaDTO,
                 linkTo(methodOn(ConcessionariaController.class).obterConcessionaria(concessionariaDTO.getConcessionariaId())).withSelfRel(),
-                linkTo(methodOn(ConcessionariaController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(ConcessionariaController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS));
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma concessionária", description = "Atualiza as informações de uma concessionária existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Concessionária atualizada com sucesso"),
@@ -105,10 +106,10 @@ public class ConcessionariaController {
         ConcessionariaDTO concessionariaDTO = concessionariaService.atualizarConcessionaria(id, concessionariaCreateDTO);
         return EntityModel.of(concessionariaDTO,
                 linkTo(methodOn(ConcessionariaController.class).obterConcessionaria(id)).withSelfRel(),
-                linkTo(methodOn(ConcessionariaController.class).listarTodos(0, 10)).withRel("listarTodos"));
+                linkTo(methodOn(ConcessionariaController.class).listarTodos(0, 10)).withRel(LISTAR_TODOS));
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Deletar uma concessionária", description = "Remove uma concessionária fornecendo o ID")
     @ApiResponses(value = {
