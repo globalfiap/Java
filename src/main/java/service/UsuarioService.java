@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 import repository.UsuarioRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
+
+    private static final String USUARIO_NAO_ENCONTRADO = "Usuário não encontrado com ID: ";
 
     private final UsuarioRepository usuarioRepository;
     private final ModelMapper modelMapper;
@@ -35,7 +36,7 @@ public class UsuarioService {
 
     public UsuarioDTO obterPorId(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(USUARIO_NAO_ENCONTRADO + id));
         return modelMapper.map(usuario, UsuarioDTO.class);
     }
 
@@ -46,7 +47,7 @@ public class UsuarioService {
         }
         return usuarios.stream()
                 .map(usuario -> modelMapper.map(usuario, UsuarioDTO.class))
-                .collect(Collectors.toList());
+                .toList(); // Substituído Collectors.toList() por toList()
     }
 
     public UsuarioDTO criarUsuario(UsuarioCreateDTO usuarioCreateDTO) {
@@ -70,7 +71,7 @@ public class UsuarioService {
 
     public UsuarioDTO atualizarUsuario(Long id, UsuarioCreateDTO usuarioCreateDTO) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(USUARIO_NAO_ENCONTRADO + id));
 
         // Atualizar os campos
         if (usuarioCreateDTO.getNome() != null && !usuarioCreateDTO.getNome().isEmpty()) {
@@ -96,7 +97,7 @@ public class UsuarioService {
 
     public void deletarUsuario(Long id) {
         if (!usuarioRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuário não encontrado com ID: " + id);
+            throw new ResourceNotFoundException(USUARIO_NAO_ENCONTRADO + id);
         }
         usuarioRepository.deleteById(id);
     }

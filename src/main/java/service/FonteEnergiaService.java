@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 import repository.FonteEnergiaRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FonteEnergiaService {
+
+    private static final String FONTE_NAO_ENCONTRADA = "Fonte de energia não encontrada com ID: ";
 
     private final FonteEnergiaRepository fonteEnergiaRepository;
     private final ModelMapper modelMapper;
@@ -34,7 +35,7 @@ public class FonteEnergiaService {
 
     public FonteEnergiaDTO obterPorId(Long id) {
         FonteEnergia fonte = fonteEnergiaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(FONTE_NAO_ENCONTRADA + id));
         return modelMapper.map(fonte, FonteEnergiaDTO.class);
     }
 
@@ -47,7 +48,7 @@ public class FonteEnergiaService {
 
     public FonteEnergiaDTO atualizarFonteEnergia(Long id, FonteEnergiaCreateDTO fonteCreateDTO) {
         FonteEnergia fonteExistente = fonteEnergiaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(FONTE_NAO_ENCONTRADA + id));
         validarFonteEnergia(fonteCreateDTO);
         fonteExistente.setTipoEnergia(fonteCreateDTO.getTipoEnergia());
 
@@ -57,11 +58,10 @@ public class FonteEnergiaService {
 
     public void deletarFonteEnergia(Long id) {
         FonteEnergia fonte = fonteEnergiaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(FONTE_NAO_ENCONTRADA + id));
         fonteEnergiaRepository.delete(fonte);
     }
 
-    // Novo método para listar fontes de energia por nome ou parte do nome
     public List<FonteEnergiaDTO> listarPorTipoEnergia(String tipoEnergia) {
         List<FonteEnergia> fontes = fonteEnergiaRepository.findByTipoEnergiaContainingIgnoreCase(tipoEnergia);
         if (fontes.isEmpty()) {
@@ -69,10 +69,9 @@ public class FonteEnergiaService {
         }
         return fontes.stream()
                 .map(fonte -> modelMapper.map(fonte, FonteEnergiaDTO.class))
-                .collect(Collectors.toList());
+                .toList(); // Substituído Collectors.toList() por Stream.toList()
     }
 
-    // Método para validar a criação e atualização de fontes de energia
     private void validarFonteEnergia(FonteEnergiaCreateDTO fonteCreateDTO) {
         if (fonteCreateDTO.getTipoEnergia() == null || fonteCreateDTO.getTipoEnergia().isEmpty()) {
             throw new InvalidRequestException("O tipo de energia é obrigatório e não pode ser vazio.");

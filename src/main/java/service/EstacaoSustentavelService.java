@@ -17,10 +17,14 @@ import repository.EstacaoSustentavelRepository;
 import repository.FonteEnergiaRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EstacaoSustentavelService {
+
+    private static final String ESTACAO_SUSTENTAVEL_NAO_ENCONTRADA = "Estação sustentável não encontrada com ID: ";
+    private static final String FONTE_NAO_ENCONTRADA = "Fonte de energia não encontrada com ID: ";
+    private static final String ESTACAO_RECARGA_NAO_ENCONTRADA = "Estação de recarga não encontrada com ID: ";
+    private static final String NENHUMA_ESTACAO_ENCONTRADA = "Nenhuma estação sustentável encontrada para o tipo de energia: ";
 
     private final EstacaoSustentavelRepository estacaoSustentavelRepository;
     private final EstacaoRecargaRepository estacaoRecargaRepository;
@@ -45,18 +49,16 @@ public class EstacaoSustentavelService {
 
     public EstacaoSustentavelDTO obterPorId(Long id) {
         EstacaoSustentavel estacao = estacaoSustentavelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estação sustentável não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_SUSTENTAVEL_NAO_ENCONTRADA + id));
         return modelMapper.map(estacao, EstacaoSustentavelDTO.class);
     }
 
     public EstacaoSustentavelDTO criarEstacaoSustentavel(EstacaoSustentavelCreateDTO estacaoCreateDTO) {
-        // Verificar se a estação de recarga existe
         EstacaoRecarga estacaoRecarga = estacaoRecargaRepository.findById(estacaoCreateDTO.getEstacaoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + estacaoCreateDTO.getEstacaoId()));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_RECARGA_NAO_ENCONTRADA + estacaoCreateDTO.getEstacaoId()));
 
-        // Verificar se a fonte de energia existe
         FonteEnergia fonteEnergia = fonteEnergiaRepository.findById(estacaoCreateDTO.getFonteId())
-                .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + estacaoCreateDTO.getFonteId()));
+                .orElseThrow(() -> new ResourceNotFoundException(FONTE_NAO_ENCONTRADA + estacaoCreateDTO.getFonteId()));
 
         if (estacaoCreateDTO.getReducaoCarbono() == null || estacaoCreateDTO.getReducaoCarbono() <= 0) {
             throw new InvalidRequestException("O valor de redução de carbono deve ser maior que zero.");
@@ -72,11 +74,11 @@ public class EstacaoSustentavelService {
 
     public EstacaoSustentavelDTO atualizarEstacaoSustentavel(Long id, EstacaoSustentavelCreateDTO estacaoCreateDTO) {
         EstacaoSustentavel estacaoExistente = estacaoSustentavelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estação sustentável não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_SUSTENTAVEL_NAO_ENCONTRADA + id));
 
         if (estacaoCreateDTO.getFonteId() != null && !estacaoCreateDTO.getFonteId().equals(estacaoExistente.getFonteEnergia().getFonteId())) {
             FonteEnergia novaFonte = fonteEnergiaRepository.findById(estacaoCreateDTO.getFonteId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Fonte de energia não encontrada com ID: " + estacaoCreateDTO.getFonteId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(FONTE_NAO_ENCONTRADA + estacaoCreateDTO.getFonteId()));
             estacaoExistente.setFonteEnergia(novaFonte);
         }
 
@@ -93,18 +95,17 @@ public class EstacaoSustentavelService {
 
     public void deletarEstacaoSustentavel(Long id) {
         EstacaoSustentavel estacaoSustentavel = estacaoSustentavelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estação sustentável não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_SUSTENTAVEL_NAO_ENCONTRADA + id));
         estacaoSustentavelRepository.delete(estacaoSustentavel);
     }
 
-    // Novo método para listar Estações Sustentáveis por Tipo de Energia
     public List<EstacaoSustentavelDTO> listarPorTipoEnergia(String tipoEnergia) {
         List<EstacaoSustentavel> estacoes = estacaoSustentavelRepository.findByFonteEnergiaTipoEnergiaContainingIgnoreCase(tipoEnergia);
         if (estacoes.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhuma estação sustentável encontrada para o tipo de energia: " + tipoEnergia);
+            throw new ResourceNotFoundException(NENHUMA_ESTACAO_ENCONTRADA + tipoEnergia);
         }
         return estacoes.stream()
                 .map(estacao -> modelMapper.map(estacao, EstacaoSustentavelDTO.class))
-                .collect(Collectors.toList());
+                .toList(); // Substituído Collectors.toList() por Stream.toList()
     }
 }

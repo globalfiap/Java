@@ -18,10 +18,11 @@ import repository.EstacaoRecargaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ReservaService {
+
+    private static final String RESERVA_NAO_ENCONTRADA = "Reserva não encontrada com ID: ";
 
     private final ReservaRepository reservaRepository;
     private final UsuarioRepository usuarioRepository;
@@ -46,12 +47,12 @@ public class ReservaService {
         List<Reserva> reservas = reservaRepository.findAll();
         return reservas.stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public ReservaDTO obterPorId(Long id) {
         Reserva reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(RESERVA_NAO_ENCONTRADA + id));
         return modelMapper.map(reserva, ReservaDTO.class);
     }
 
@@ -62,7 +63,7 @@ public class ReservaService {
         }
         return reservas.stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<ReservaDTO> listarPorUsuario(Long usuarioId) {
@@ -72,7 +73,7 @@ public class ReservaService {
         }
         return reservas.stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<ReservaDTO> listarPorIntervaloDeDatas(LocalDateTime inicio, LocalDateTime fim) {
@@ -82,7 +83,7 @@ public class ReservaService {
         }
         return reservas.stream()
                 .map(reserva -> modelMapper.map(reserva, ReservaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public ReservaDTO criarReserva(ReservaCreateDTO reservaCreateDTO) {
@@ -111,7 +112,7 @@ public class ReservaService {
 
     public ReservaDTO atualizarReserva(Long id, ReservaCreateDTO reservaCreateDTO) {
         Reserva reservaExistente = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(RESERVA_NAO_ENCONTRADA + id));
 
         if (reservaCreateDTO.getDataReserva() != null) {
             reservaExistente.setDataReserva(reservaCreateDTO.getDataReserva());
@@ -126,7 +127,7 @@ public class ReservaService {
 
     public void deletarReserva(Long id) {
         Reserva reserva = reservaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(RESERVA_NAO_ENCONTRADA + id));
         reservaRepository.delete(reserva);
     }
 }

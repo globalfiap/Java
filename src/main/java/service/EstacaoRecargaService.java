@@ -15,10 +15,14 @@ import repository.BairroRepository;
 import repository.EstacaoRecargaRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EstacaoRecargaService {
+
+    private static final String ESTACAO_RECARGA_NAO_ENCONTRADA = "Estação de recarga não encontrada com ID: ";
+    private static final String BAIRRO_NAO_ENCONTRADO = "Bairro não encontrado com ID: ";
+    private static final String NENHUMA_ESTACAO_ENCONTRADA_BAIRRO = "Nenhuma estação de recarga encontrada para o bairro com ID: ";
+    private static final String NENHUMA_ESTACAO_ENCONTRADA_TIPO = "Nenhuma estação de recarga encontrada com o tipo de carregador: ";
 
     private final EstacaoRecargaRepository estacaoRecargaRepository;
     private final BairroRepository bairroRepository;
@@ -38,7 +42,7 @@ public class EstacaoRecargaService {
 
     public EstacaoRecargaDTO obterPorId(Long id) {
         EstacaoRecarga estacao = estacaoRecargaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_RECARGA_NAO_ENCONTRADA + id));
         return modelMapper.map(estacao, EstacaoRecargaDTO.class);
     }
 
@@ -48,7 +52,7 @@ public class EstacaoRecargaService {
         }
 
         Bairro bairro = bairroRepository.findById(estacaoCreateDTO.getBairroId())
-                .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + estacaoCreateDTO.getBairroId()));
+                .orElseThrow(() -> new ResourceNotFoundException(BAIRRO_NAO_ENCONTRADO + estacaoCreateDTO.getBairroId()));
 
         if (estacaoCreateDTO.getLatitude() == null || estacaoCreateDTO.getLongitude() == null) {
             throw new InvalidRequestException("Latitude e Longitude são obrigatórios.");
@@ -63,7 +67,7 @@ public class EstacaoRecargaService {
 
     public EstacaoRecargaDTO atualizarEstacaoRecarga(Long id, EstacaoRecargaCreateDTO estacaoCreateDTO) {
         EstacaoRecarga estacaoExistente = estacaoRecargaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_RECARGA_NAO_ENCONTRADA + id));
 
         if (estacaoCreateDTO.getNome() != null && estacaoCreateDTO.getNome().isEmpty()) {
             throw new InvalidRequestException("Nome da estação de recarga não pode ser vazio.");
@@ -77,7 +81,7 @@ public class EstacaoRecargaService {
 
         if (estacaoCreateDTO.getBairroId() != null && !estacaoCreateDTO.getBairroId().equals(estacaoExistente.getBairro().getBairroId())) {
             Bairro novoBairro = bairroRepository.findById(estacaoCreateDTO.getBairroId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + estacaoCreateDTO.getBairroId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(BAIRRO_NAO_ENCONTRADO + estacaoCreateDTO.getBairroId()));
             estacaoExistente.setBairro(novoBairro);
         }
 
@@ -87,29 +91,27 @@ public class EstacaoRecargaService {
 
     public void deletarEstacaoRecarga(Long id) {
         EstacaoRecarga estacaoRecarga = estacaoRecargaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_RECARGA_NAO_ENCONTRADA + id));
         estacaoRecargaRepository.delete(estacaoRecarga);
     }
 
-    // Novo método para listar estações de recarga por Bairro
     public List<EstacaoRecargaDTO> listarPorBairro(Long bairroId) {
         List<EstacaoRecarga> estacoes = estacaoRecargaRepository.findByBairroBairroId(bairroId);
         if (estacoes.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhuma estação de recarga encontrada para o bairro com ID: " + bairroId);
+            throw new ResourceNotFoundException(NENHUMA_ESTACAO_ENCONTRADA_BAIRRO + bairroId);
         }
         return estacoes.stream()
                 .map(estacao -> modelMapper.map(estacao, EstacaoRecargaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    // Novo método para listar estações de recarga por Tipo de Carregador
     public List<EstacaoRecargaDTO> listarPorTipoCarregador(String tipoCarregador) {
         List<EstacaoRecarga> estacoes = estacaoRecargaRepository.findByTipoCarregadorContainingIgnoreCase(tipoCarregador);
         if (estacoes.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhuma estação de recarga encontrada com o tipo de carregador: " + tipoCarregador);
+            throw new ResourceNotFoundException(NENHUMA_ESTACAO_ENCONTRADA_TIPO + tipoCarregador);
         }
         return estacoes.stream()
                 .map(estacao -> modelMapper.map(estacao, EstacaoRecargaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -16,10 +16,13 @@ import repository.HistoricoCarregamentoRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class GastoCarregamentoService {
+
+    private static final String GASTO_NAO_ENCONTRADO = "Gasto de carregamento não encontrado com ID: ";
+    private static final String HISTORICO_NAO_ENCONTRADO = "Histórico de carregamento não encontrado com ID: ";
+    private static final String GASTOS_PERIODO_NAO_ENCONTRADOS = "Nenhum gasto de carregamento encontrado entre as datas fornecidas.";
 
     private final GastoCarregamentoRepository gastoCarregamentoRepository;
     private final HistoricoCarregamentoRepository historicoCarregamentoRepository;
@@ -42,26 +45,26 @@ public class GastoCarregamentoService {
     public List<GastoCarregamentoDTO> listarPorHistoricoCarregamento(Long historicoId) {
         List<GastoCarregamento> gastos = gastoCarregamentoRepository.findByHistoricoCarregamentoHistoricoId(historicoId);
         if (gastos.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhum gasto de carregamento encontrado para o histórico com ID: " + historicoId);
+            throw new ResourceNotFoundException(HISTORICO_NAO_ENCONTRADO + historicoId);
         }
         return gastos.stream()
                 .map(gasto -> modelMapper.map(gasto, GastoCarregamentoDTO.class))
-                .collect(Collectors.toList());
+                .toList(); // Usando `Stream.toList()` para simplificação e evitar modificações.
     }
 
     public List<GastoCarregamentoDTO> listarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         List<GastoCarregamento> gastos = gastoCarregamentoRepository.findByDataGastoBetween(inicio, fim);
         if (gastos.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhum gasto de carregamento encontrado entre as datas fornecidas.");
+            throw new ResourceNotFoundException(GASTOS_PERIODO_NAO_ENCONTRADOS);
         }
         return gastos.stream()
                 .map(gasto -> modelMapper.map(gasto, GastoCarregamentoDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public GastoCarregamentoDTO obterPorId(Long id) {
         GastoCarregamento gasto = gastoCarregamentoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto de carregamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(GASTO_NAO_ENCONTRADO + id));
         return modelMapper.map(gasto, GastoCarregamentoDTO.class);
     }
 
@@ -75,7 +78,7 @@ public class GastoCarregamentoService {
         }
 
         HistoricoCarregamento historico = historicoCarregamentoRepository.findById(gastoCreateDTO.getHistoricoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Histórico de carregamento não encontrado com ID: " + gastoCreateDTO.getHistoricoId()));
+                .orElseThrow(() -> new ResourceNotFoundException(HISTORICO_NAO_ENCONTRADO + gastoCreateDTO.getHistoricoId()));
 
         GastoCarregamento gasto = modelMapper.map(gastoCreateDTO, GastoCarregamento.class);
         gasto.setHistoricoCarregamento(historico);
@@ -86,7 +89,7 @@ public class GastoCarregamentoService {
 
     public GastoCarregamentoDTO atualizarGastoCarregamento(Long id, GastoCarregamentoCreateDTO gastoCreateDTO) {
         GastoCarregamento gastoExistente = gastoCarregamentoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto de carregamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(GASTO_NAO_ENCONTRADO + id));
 
         if (gastoCreateDTO.getCustoTotal() != null) {
             if (gastoCreateDTO.getCustoTotal() <= 0) {
@@ -101,7 +104,7 @@ public class GastoCarregamentoService {
 
     public void deletarGastoCarregamento(Long id) {
         GastoCarregamento gasto = gastoCarregamentoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Gasto de carregamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(GASTO_NAO_ENCONTRADO + id));
         gastoCarregamentoRepository.delete(gasto);
     }
 }

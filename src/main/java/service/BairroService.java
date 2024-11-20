@@ -15,6 +15,8 @@ import repository.BairroRepository;
 @Service
 public class BairroService {
 
+    private static final String BAIRRO_NAO_ENCONTRADO = "Bairro não encontrado com ID: ";
+
     private final BairroRepository bairroRepository;
     private final ModelMapper modelMapper;
 
@@ -31,7 +33,7 @@ public class BairroService {
 
     public BairroDTO obterPorId(Long id) {
         Bairro bairro = bairroRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(BAIRRO_NAO_ENCONTRADO + id));
         return modelMapper.map(bairro, BairroDTO.class);
     }
 
@@ -47,7 +49,7 @@ public class BairroService {
 
     public BairroDTO atualizarBairro(Long id, BairroCreateDTO bairroCreateDTO) {
         Bairro bairroExistente = bairroRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(BAIRRO_NAO_ENCONTRADO + id));
 
         if (bairroCreateDTO.getNome() == null || bairroCreateDTO.getNome().isEmpty()) {
             throw new InvalidRequestException("Nome do bairro não pode ser vazio.");
@@ -61,7 +63,7 @@ public class BairroService {
 
     public void deletarBairro(Long id) {
         Bairro bairro = bairroRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Bairro não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(BAIRRO_NAO_ENCONTRADO + id));
         bairroRepository.delete(bairro);
     }
 }

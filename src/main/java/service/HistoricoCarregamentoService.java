@@ -19,10 +19,14 @@ import repository.VeiculoRepository;
 import repository.EstacaoRecargaRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class HistoricoCarregamentoService {
+
+    private static final String HISTORICO_NAO_ENCONTRADO = "Histórico de carregamento não encontrado com ID: ";
+    private static final String USUARIO_NAO_ENCONTRADO = "Usuário não encontrado com ID: ";
+    private static final String VEICULO_NAO_ENCONTRADO = "Veículo não encontrado com ID: ";
+    private static final String ESTACAO_NAO_ENCONTRADA = "Estação de recarga não encontrada com ID: ";
 
     private final HistoricoCarregamentoRepository historicoCarregamentoRepository;
     private final UsuarioRepository usuarioRepository;
@@ -44,41 +48,32 @@ public class HistoricoCarregamentoService {
     }
 
     public Page<HistoricoCarregamentoDTO> listarTodosPaginado(Pageable pageable) {
-        Page<HistoricoCarregamento> historicos = historicoCarregamentoRepository.findAll(pageable);
-        return historicos.map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class));
+        return historicoCarregamentoRepository.findAll(pageable)
+                .map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class));
     }
 
     public List<HistoricoCarregamentoDTO> listarTodos() {
-        List<HistoricoCarregamento> historicos = historicoCarregamentoRepository.findAll();
-        return historicos.stream()
+        return historicoCarregamentoRepository.findAll().stream()
                 .map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public HistoricoCarregamentoDTO obterPorId(Long id) {
         HistoricoCarregamento historico = historicoCarregamentoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Histórico de carregamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(HISTORICO_NAO_ENCONTRADO + id));
         return modelMapper.map(historico, HistoricoCarregamentoDTO.class);
     }
 
     public List<HistoricoCarregamentoDTO> listarPorUsuario(Long usuarioId) {
-        List<HistoricoCarregamento> historicos = historicoCarregamentoRepository.findByUsuarioUsuarioId(usuarioId);
-        if (historicos.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhum histórico de carregamento encontrado para o usuário com ID: " + usuarioId);
-        }
-        return historicos.stream()
+        return historicoCarregamentoRepository.findByUsuarioUsuarioId(usuarioId).stream()
                 .map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<HistoricoCarregamentoDTO> listarPorVeiculo(Long veiculoId) {
-        List<HistoricoCarregamento> historicos = historicoCarregamentoRepository.findByVeiculoVeiculoId(veiculoId);
-        if (historicos.isEmpty()) {
-            throw new ResourceNotFoundException("Nenhum histórico de carregamento encontrado para o veículo com ID: " + veiculoId);
-        }
-        return historicos.stream()
+        return historicoCarregamentoRepository.findByVeiculoVeiculoId(veiculoId).stream()
                 .map(historico -> modelMapper.map(historico, HistoricoCarregamentoDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public HistoricoCarregamentoDTO criarHistorico(HistoricoCarregamentoCreateDTO historicoCreateDTO) {
@@ -91,11 +86,11 @@ public class HistoricoCarregamentoService {
         }
 
         Usuario usuario = usuarioRepository.findById(historicoCreateDTO.getUsuarioId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com ID: " + historicoCreateDTO.getUsuarioId()));
+                .orElseThrow(() -> new ResourceNotFoundException(USUARIO_NAO_ENCONTRADO + historicoCreateDTO.getUsuarioId()));
         Veiculo veiculo = veiculoRepository.findById(historicoCreateDTO.getVeiculoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Veículo não encontrado com ID: " + historicoCreateDTO.getVeiculoId()));
+                .orElseThrow(() -> new ResourceNotFoundException(VEICULO_NAO_ENCONTRADO + historicoCreateDTO.getVeiculoId()));
         EstacaoRecarga estacaoRecarga = estacaoRecargaRepository.findById(historicoCreateDTO.getEstacaoId())
-                .orElseThrow(() -> new ResourceNotFoundException("Estação de recarga não encontrada com ID: " + historicoCreateDTO.getEstacaoId()));
+                .orElseThrow(() -> new ResourceNotFoundException(ESTACAO_NAO_ENCONTRADA + historicoCreateDTO.getEstacaoId()));
 
         HistoricoCarregamento historico = modelMapper.map(historicoCreateDTO, HistoricoCarregamento.class);
         historico.setUsuario(usuario);
@@ -108,7 +103,7 @@ public class HistoricoCarregamentoService {
 
     public HistoricoCarregamentoDTO atualizarHistorico(Long id, HistoricoCarregamentoCreateDTO historicoCreateDTO) {
         HistoricoCarregamento historicoExistente = historicoCarregamentoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Histórico de carregamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(HISTORICO_NAO_ENCONTRADO + id));
 
         if (historicoCreateDTO.getKwhConsumidos() != null) {
             if (historicoCreateDTO.getKwhConsumidos() <= 0) {
@@ -127,7 +122,7 @@ public class HistoricoCarregamentoService {
 
     public void deletarHistorico(Long id) {
         HistoricoCarregamento historico = historicoCarregamentoRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Histórico de carregamento não encontrado com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(HISTORICO_NAO_ENCONTRADO + id));
         historicoCarregamentoRepository.delete(historico);
     }
 }

@@ -15,10 +15,11 @@ import repository.BairroRepository;
 import repository.ConcessionariaRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ConcessionariaService {
+
+    private static final String CONCESSIONARIA_NAO_ENCONTRADA = "Concessionária não encontrada com ID: ";
 
     private final ConcessionariaRepository concessionariaRepository;
     private final BairroRepository bairroRepository;
@@ -38,7 +39,7 @@ public class ConcessionariaService {
 
     public ConcessionariaDTO obterPorId(Long id) {
         Concessionaria concessionaria = concessionariaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Concessionária não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(CONCESSIONARIA_NAO_ENCONTRADA + id));
         return modelMapper.map(concessionaria, ConcessionariaDTO.class);
     }
 
@@ -64,7 +65,7 @@ public class ConcessionariaService {
 
     public ConcessionariaDTO atualizarConcessionaria(Long id, ConcessionariaCreateDTO concessionariaCreateDTO) {
         Concessionaria concessionariaExistente = concessionariaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Concessionária não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(CONCESSIONARIA_NAO_ENCONTRADA + id));
 
         if (concessionariaCreateDTO.getNome() != null && concessionariaCreateDTO.getNome().isEmpty()) {
             throw new InvalidRequestException("Nome da concessionária não pode ser vazio.");
@@ -90,11 +91,10 @@ public class ConcessionariaService {
 
     public void deletarConcessionaria(Long id) {
         Concessionaria concessionaria = concessionariaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Concessionária não encontrada com ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(CONCESSIONARIA_NAO_ENCONTRADA + id));
         concessionariaRepository.delete(concessionaria);
     }
 
-    // Novo método para listar concessionárias por Bairro
     public List<ConcessionariaDTO> listarPorBairro(Long bairroId) {
         List<Concessionaria> concessionarias = concessionariaRepository.findByBairroBairroId(bairroId);
         if (concessionarias.isEmpty()) {
@@ -102,10 +102,9 @@ public class ConcessionariaService {
         }
         return concessionarias.stream()
                 .map(concessionaria -> modelMapper.map(concessionaria, ConcessionariaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    // Novo método para listar concessionárias por Marca
     public List<ConcessionariaDTO> listarPorMarca(String marca) {
         List<Concessionaria> concessionarias = concessionariaRepository.findByMarcaContainingIgnoreCase(marca);
         if (concessionarias.isEmpty()) {
@@ -113,6 +112,6 @@ public class ConcessionariaService {
         }
         return concessionarias.stream()
                 .map(concessionaria -> modelMapper.map(concessionaria, ConcessionariaDTO.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 }
