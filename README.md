@@ -12,7 +12,7 @@ https://youtu.be/vUCIWn_lwt0
 
 ![img.png](img.png)
 
-![img_1.png](img_1.png)
+![img_2.png](img_2.png)
 
 ### Estrutura do Projeto
 O projeto está organizado da seguinte forma:
