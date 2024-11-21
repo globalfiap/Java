@@ -3,6 +3,17 @@
 ### Descrição do Projeto
 EcoDrive é uma aplicação móvel desenvolvida para otimizar a experiência de uso de veículos elétricos, facilitando o acesso às estações de carregamento, promovendo o uso de energias renováveis e proporcionando uma experiência de carregamento eficiente e sustentável. A aplicação foi desenvolvida em Java, utilizando Spring Boot, com integrações para APIs RESTful e um sistema completo de CRUD, abrangendo diversas funcionalidades para melhorar a infraestrutura de mobilidade elétrica.
 
+### Vídeo do Software Funcionando 
+https://youtu.be/vUCIWn_lwt0
+
+### Vídeo Pitch
+
+### Diagramas
+
+![img.png](img.png)
+
+![img_1.png](img_1.png)
+
 ### Estrutura do Projeto
 O projeto está organizado da seguinte forma:
 
@@ -59,70 +70,7 @@ O projeto está organizado da seguinte forma:
 5. **Acessar a Documentação da API**
    Abra o navegador e acesse `http://localhost:8080/swagger-ui.html` para visualizar a documentação gerada pelo Swagger.
 
-### Endpoints Principais
-
-#### Estações de Recarga
-- `GET /estacoes` - Listar todas as estações de recarga
-- `POST /estacoes` - Adicionar uma nova estação de recarga
-- `GET /estacoes/{id}` - Obter detalhes de uma estação específica
-- `PUT /estacoes/{id}` - Atualizar uma estação de recarga
-- `DELETE /estacoes/{id}` - Remover uma estação de recarga
-
-#### Usuários
-- `GET /usuarios` - Listar todos os usuários
-- `POST /usuarios` - Adicionar um novo usuário
-- `GET /usuarios/{id}` - Obter detalhes de um usuário específico
-- `PUT /usuarios/{id}` - Atualizar um usuário
-- `DELETE /usuarios/{id}` - Remover um usuário
-
-#### Veículos
-- `GET /veiculos` - Listar todos os veículos
-- `POST /veiculos` - Adicionar um novo veículo
-- `GET /veiculos/{id}` - Obter detalhes de um veículo específico
-- `PUT /veiculos/{id}` - Atualizar um veículo
-- `DELETE /veiculos/{id}` - Remover um veículo
-
-#### Concessionárias
-- `GET /concessionarias` - Listar todas as concessionárias
-- `POST /concessionarias` - Adicionar uma nova concessionária
-- `GET /concessionarias/{id}` - Obter detalhes de uma concessionária específica
-- `PUT /concessionarias/{id}` - Atualizar uma concessionária
-- `DELETE /concessionarias/{id}` - Remover uma concessionária
-
-#### Estações Sustentáveis
-- `GET /estacoes-sustentaveis` - Listar todas as estações sustentáveis
-- `POST /estacoes-sustentaveis` - Adicionar uma nova estação sustentável
-- `GET /estacoes-sustentaveis/{id}` - Obter detalhes de uma estação sustentável específica
-- `PUT /estacoes-sustentaveis/{id}` - Atualizar uma estação sustentável
-- `DELETE /estacoes-sustentaveis/{id}` - Remover uma estação sustentável
-
-#### Reservas
-- `GET /reservas` - Listar todas as reservas
-- `POST /reservas` - Adicionar uma nova reserva
-- `GET /reservas/{id}` - Obter detalhes de uma reserva específica
-- `PUT /reservas/{id}` - Atualizar uma reserva
-- `DELETE /reservas/{id}` - Cancelar uma reserva
-
-#### Gastos de Carregamento
-- `GET /gastos-carregamento` - Listar todos os registros de gastos de carregamento
-- `POST /gastos-carregamento` - Adicionar um novo registro de gasto de carregamento
-- `GET /gastos-carregamento/{id}` - Obter detalhes de um gasto de carregamento específico
-- `PUT /gastos-carregamento/{id}` - Atualizar um gasto de carregamento
-- `DELETE /gastos-carregamento/{id}` - Remover um registro de gasto de carregamento
-
-#### Histórico de Carregamento
-- `GET /historico-carregamento` - Listar todo o histórico de carregamento
-- `POST /historico-carregamento` - Adicionar um novo registro ao histórico de carregamento
-- `GET /historico-carregamento/{id}` - Obter detalhes de um registro de histórico de carregamento específico
-- `PUT /historico-carregamento/{id}` - Atualizar um registro de histórico de carregamento
-- `DELETE /historico-carregamento/{id}` - Remover um registro do histórico de carregamento
-
-#### Fontes de Energia
-- `GET /fontes-energia` - Listar todas as fontes de energia
-- `POST /fontes-energia` - Adicionar uma nova fonte de energia
-- `GET /fontes-energia/{id}` - Obter detalhes de uma fonte de energia específica
-- `PUT /fontes-energia/{id}` - Atualizar uma fonte de energia
-- `DELETE /fontes-energia/{id}` - Remover uma fonte de energia
+#### Endpoints se encontram no swagger
 
 ### Configurações Adicionais
 - **Banco de Dados**: Configure o arquivo `application.properties` com as credenciais e URL do banco de dados para que a aplicação possa se conectar corretamente.
