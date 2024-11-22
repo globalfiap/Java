@@ -24,7 +24,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/veiculos", produces = "application/json", consumes = "application/json")
+@RequestMapping(value = "/veiculos", produces = "application/json")
 @Tag(name = "Veículos", description = "Controle dos Veículos")
 public class VeiculoController {
 
