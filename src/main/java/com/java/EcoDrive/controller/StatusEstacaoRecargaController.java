@@ -2,14 +2,18 @@ package com.java.EcoDrive.controller;
 
 import com.java.EcoDrive.model.StatusEstacaoRecarga;
 import com.java.EcoDrive.service.StatusEstacaoRecargaService;
+import com.java.EcoDrive.dto.StatusEstacaoRecarga.StatusEstacaoRecargaCreateDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.*;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,11 +21,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
+
 import java.util.List;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping(value = "/status-estacoes", produces = "application/json", consumes = "application/json")
+@RequestMapping("/status-estacoes")
 @Tag(name = "Status Estação Recarga", description = "Controlador para Status das Estações de Recarga")
 public class StatusEstacaoRecargaController {
 
@@ -71,20 +77,17 @@ public class StatusEstacaoRecargaController {
                 linkTo(methodOn(StatusEstacaoRecargaController.class).listarTodos(0, 10)).withRel("status-estacoes"));
     }
 
-    @PostMapping
+    @PostMapping("/inserir")
     @Operation(summary = "Criar um novo status", description = "Cria um novo status para uma estação de recarga")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Status criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    public EntityModel<StatusEstacaoRecarga> criarStatus(
-            @Parameter(description = "Dados do status a ser criado") @Valid @RequestBody StatusEstacaoRecarga statusEstacaoRecarga) {
-        StatusEstacaoRecarga statusCriado = statusEstacaoRecargaService.criarStatus(statusEstacaoRecarga);
-
-        return EntityModel.of(statusCriado,
-                linkTo(methodOn(StatusEstacaoRecargaController.class).obterStatus(statusCriado.getStatusId())).withSelfRel(),
-                linkTo(methodOn(StatusEstacaoRecargaController.class).listarTodos(0, 10)).withRel("status-estacoes"));
+    public ResponseEntity<StatusEstacaoRecarga> criarStatusEstacao(
+            @Parameter(description = "Dados do status a ser criado") @Valid @RequestBody StatusEstacaoRecargaCreateDTO statusDTO) {
+        StatusEstacaoRecarga statusEstacao = statusEstacaoRecargaService.criarStatusEstacao(statusDTO);
+        return ResponseEntity.ok(statusEstacao);
     }
 
     @PutMapping(value = "/{id}")
@@ -97,7 +100,7 @@ public class StatusEstacaoRecargaController {
     })
     public EntityModel<StatusEstacaoRecarga> atualizarStatus(
             @Parameter(description = "ID do status a ser atualizado") @PathVariable Long id,
-            @Parameter(description = "Dados atualizados do status") @Valid @RequestBody StatusEstacaoRecarga statusAtualizado) {
+            @Parameter(description = "Dados atualizados do status") @Valid @RequestBody StatusEstacaoRecargaCreateDTO statusAtualizado) {
         StatusEstacaoRecarga status = statusEstacaoRecargaService.atualizarStatus(id, statusAtualizado);
 
         return EntityModel.of(status,

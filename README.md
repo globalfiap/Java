@@ -43,6 +43,7 @@ O projeto está organizado da seguinte forma:
 - **JPA/Hibernate**
 - **Swagger** para documentação da API
 - **ModelMapper** para facilitação de mapeamento de objetos
+- **JDK17** 
 
 ### Funcionalidades Principais
 - **Gestão de Estações de Recarga**: Permite gerenciar informações relacionadas às estações de recarga para veículos elétricos.
