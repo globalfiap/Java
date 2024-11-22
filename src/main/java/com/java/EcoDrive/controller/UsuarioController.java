@@ -2,22 +2,22 @@ package com.java.EcoDrive.controller;
 
 import com.java.EcoDrive.dto.Usuario.UsuarioCreateDTO;
 import com.java.EcoDrive.dto.Usuario.UsuarioDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.validation.Valid;
 import com.java.EcoDrive.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,13 +25,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping(value = "/api/usuarios", produces = "application/json", consumes = "application/json")
+@RequestMapping(value = "/api/usuarios", produces = "application/json")
 @Tag(name = "Usuários", description = "Controle dos Usuários")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    // Definindo constante para "usuarios"
     private static final String USUARIOS_REL = "usuarios";
 
     @Autowired
@@ -56,12 +55,12 @@ public class UsuarioController {
         List<EntityModel<UsuarioDTO>> usuarios = usuariosPaginados.stream()
                 .map(usuarioDTO -> EntityModel.of(usuarioDTO,
                         linkTo(methodOn(UsuarioController.class).obterUsuario(usuarioDTO.getUsuarioId())).withSelfRel()))
-                .toList(); // Substituição de collect(Collectors.toList()) por toList()
+                .toList();
 
         return CollectionModel.of(usuarios, linkTo(methodOn(UsuarioController.class).listarTodos(page, size)).withSelfRel());
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping("/{id}")
     @Operation(summary = "Obter um usuário específico", description = "Retorna os detalhes de um usuário pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
@@ -74,7 +73,7 @@ public class UsuarioController {
 
         return EntityModel.of(usuarioDTO,
                 linkTo(methodOn(UsuarioController.class).obterUsuario(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL)); // Usando constante
+                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL));
     }
 
     @PostMapping
@@ -84,16 +83,18 @@ public class UsuarioController {
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    public EntityModel<UsuarioDTO> criarUsuario(
+    public ResponseEntity<EntityModel<UsuarioDTO>> criarUsuario(
             @Parameter(description = "Dados do usuário a ser criado") @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
         UsuarioDTO usuarioDTO = usuarioService.criarUsuario(usuarioCreateDTO);
 
-        return EntityModel.of(usuarioDTO,
-                linkTo(methodOn(UsuarioController.class).obterUsuario(usuarioDTO.getUsuarioId())).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL)); // Usando constante
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                EntityModel.of(usuarioDTO,
+                        linkTo(methodOn(UsuarioController.class).obterUsuario(usuarioDTO.getUsuarioId())).withSelfRel(),
+                        linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL))
+        );
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping("/{id}")
     @Operation(summary = "Atualizar um usuário", description = "Atualiza as informações de um usuário existente pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
@@ -101,17 +102,19 @@ public class UsuarioController {
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
             @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
     })
-    public EntityModel<UsuarioDTO> atualizarUsuario(
+    public ResponseEntity<EntityModel<UsuarioDTO>> atualizarUsuario(
             @Parameter(description = "ID do usuário a ser atualizado") @PathVariable Long id,
             @Parameter(description = "Dados atualizados do usuário") @Valid @RequestBody UsuarioCreateDTO usuarioCreateDTO) {
         UsuarioDTO usuarioDTO = usuarioService.atualizarUsuario(id, usuarioCreateDTO);
 
-        return EntityModel.of(usuarioDTO,
-                linkTo(methodOn(UsuarioController.class).obterUsuario(id)).withSelfRel(),
-                linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL)); // Usando constante
+        return ResponseEntity.ok(
+                EntityModel.of(usuarioDTO,
+                        linkTo(methodOn(UsuarioController.class).obterUsuario(id)).withSelfRel(),
+                        linkTo(methodOn(UsuarioController.class).listarTodos(0, 10)).withRel(USUARIOS_REL))
+        );
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Deletar um usuário", description = "Remove um usuário pelo seu ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),

@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
-    // Tratamento para InvalidRequestException (exemplo de exceção personalizada)
+    // Tratamento para InvalidRequestException (exceção personalizada)
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<?> handleInvalidRequestException(InvalidRequestException ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
@@ -63,11 +63,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
-    // Tratamento para exceções do tipo DataIntegrityViolationException (violação de integridade referencial, por exemplo)
+    // Tratamento para DataIntegrityViolationException (violação de integridade referencial, por exemplo)
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(org.springframework.dao.DataIntegrityViolationException ex) {
         Map<String, String> errorDetails = new HashMap<>();
-        errorDetails.put("message", "Operação não permitida devido a violação de integridade de dados. " + ex.getMostSpecificCause().getMessage());
+        errorDetails.put("message", "Operação não permitida devido a violação de integridade de dados.");
+        errorDetails.put("details", ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : "Detalhes não disponíveis.");
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 

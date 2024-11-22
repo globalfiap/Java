@@ -9,6 +9,8 @@ import java.util.List;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByEmail(String email);
+
+    boolean existsByEmailAndUsuarioIdNot(String email, Long usuarioId); // Novo método
+
     List<Usuario> findByNomeContainingIgnoreCase(String nome);
 }
-

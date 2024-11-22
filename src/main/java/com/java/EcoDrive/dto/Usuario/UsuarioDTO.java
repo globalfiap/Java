@@ -1,5 +1,9 @@
 package com.java.EcoDrive.dto.Usuario;
 
+/**
+ * DTO para representar os dados do usuário.
+ * Exclui campos sensíveis, como senha, e relacionamentos complexos.
+ */
 public class UsuarioDTO {
     private Long usuarioId;
     private String nome;
