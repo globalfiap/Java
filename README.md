@@ -7,6 +7,7 @@ EcoDrive é uma aplicação móvel desenvolvida para otimizar a experiência de 
 https://youtu.be/vUCIWn_lwt0
 
 ### Vídeo Pitch
+https://youtu.be/9d0WgEYPTYQ 
 
 ### Diagramas
 
