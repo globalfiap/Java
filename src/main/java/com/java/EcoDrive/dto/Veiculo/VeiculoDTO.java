@@ -7,7 +7,7 @@ public class VeiculoDTO {
     private String marca;
     private String modelo;
     private Integer ano;
-    private Boolean isEletrico;
+    private Integer isEletrico;
 
     // Getters e Setters
 
@@ -51,11 +51,11 @@ public class VeiculoDTO {
         this.ano = ano;
     }
 
-    public Boolean getIsEletrico() {
+    public Integer getIsEletrico() {
         return isEletrico;
     }
 
-    public void setIsEletrico(Boolean isEletrico) {
+    public void setIsEletrico(Integer isEletrico) {
         this.isEletrico = isEletrico;
     }
 }

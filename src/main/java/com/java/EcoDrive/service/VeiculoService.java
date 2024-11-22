@@ -109,9 +109,8 @@ public class VeiculoService {
             veiculoExistente.setAno(veiculoCreateDTO.getAno());
         }
 
-        // Corrigindo a expressão booleana para usar um tipo primitivo
         if (veiculoCreateDTO.getIsEletrico() != null) {
-            veiculoExistente.setIsEletrico(veiculoCreateDTO.getIsEletrico() ? 1 : 0);
+            veiculoExistente.setIsEletrico(veiculoCreateDTO.getIsEletrico());
         }
 
         if (veiculoCreateDTO.getUsuarioId() != null && !veiculoCreateDTO.getUsuarioId().equals(veiculoExistente.getUsuario().getUsuarioId())) {

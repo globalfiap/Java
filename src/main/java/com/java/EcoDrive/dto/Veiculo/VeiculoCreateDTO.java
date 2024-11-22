@@ -21,7 +21,7 @@ public class VeiculoCreateDTO {
     private Integer ano;
 
     @NotNull(message = "O campo isEletrico é obrigatório")
-    private Boolean isEletrico;
+    private Integer isEletrico;
 
     // Getters e Setters
 
@@ -57,11 +57,11 @@ public class VeiculoCreateDTO {
         this.ano = ano;
     }
 
-    public Boolean getIsEletrico() {
+    public Integer getIsEletrico() {
         return isEletrico;
     }
 
-    public void setIsEletrico(Boolean isEletrico) {
+    public void setIsEletrico(Integer isEletrico) {
         this.isEletrico = isEletrico;
     }
 }
