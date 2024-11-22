@@ -23,7 +23,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping("/fontes-energia")
+@RequestMapping(value ="/fontes-energia", produces = "application/json")
 @Tag(name = "Fontes de Energia", description = "Fonte de Energia Controller")
 public class FonteEnergiaController {
 

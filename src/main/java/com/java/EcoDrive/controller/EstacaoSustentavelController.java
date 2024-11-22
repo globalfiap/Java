@@ -23,7 +23,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
-@RequestMapping("/estacoes-sustentaveis")
+@RequestMapping(value ="/estacoes-sustentaveis", produces = "application/json")
 @Tag(name = "Estações Sustentáveis", description = "Controle das Estações Sustentáveis")
 public class EstacaoSustentavelController {
 
