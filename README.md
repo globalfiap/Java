@@ -79,6 +79,17 @@ O projeto está organizado da seguinte forma:
 
 - **Swagger**: Para acessar a documentação da API, certifique-se de que o Swagger está ativado no arquivo de configuração.
 
+### Problemas Técnicos
+
+O banco inicialmente foi feito no rm do Luis, e no dia da entrega tivemos que mudar, pois deu o erro:
+
+Status : Com FalhaFalha no teste: ORA-02391: exceeded simultaneous SESSIONS_PER_USER limit
+
+Mas no vídeo consegui mostrar que dias atrás a aplicação estava rodando com sucesso
+
+![img_3.png](img_3.png)
+![img_1.png](img_1.png)
+![img_4.png](img_4.png)
 
 
 
