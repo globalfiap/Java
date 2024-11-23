@@ -91,6 +91,10 @@ Mas no vídeo consegui mostrar que dias atrás a aplicação estava rodando com 
 ![img_1.png](img_1.png)
 ![img_4.png](img_4.png)
 
+Ontem temtei em outra plataforma e foi normalmente 
+
+![img_5.png](img_5.png)
+![img_6.png](img_6.png)
 
 
 
